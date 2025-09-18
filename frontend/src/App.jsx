@@ -1,6 +1,8 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import './App.css';
+
+// Components for the landing page
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import FeaturesSection from './components/FeaturesSection';
@@ -8,104 +10,186 @@ import HowItWorksSection from './components/HowItWorksSection';
 import Footer from './components/Footer';
 import AskAiPage from './pages/AskAiPage';
 
-// This component contains all your original landing page content
-const LandingPage = () => {
-  useEffect(() => {
-    // Smooth scroll behavior
-    const links = document.querySelectorAll('a[href^="#"]');
-    links.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const href = link.getAttribute('href');
-        const target = document.querySelector(href);
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth' });
-        }
-      });
-    });
+// Components for authentication and dashboard
+import SignIn from './components/Login/SignIn';
+import SignUp from './components/Login/SignUp';
+import AuthService from './services/AuthService';
+import ProfilePage from './pages/ProfilePage'; 
 
-    // Intersection Observer for scroll animations
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
+/**
+ * Component for the static landing page content
+ */
+const LandingPage = ({ isAuthenticated, openLoginPopup, openSignupPopup, handleLogout }) => {
+    useEffect(() => {
+        // Smooth scroll behavior for anchor links
+        const links = document.querySelectorAll('a[href^="#"]');
+        links.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const href = link.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            });
+        });
+
+        // Intersection Observer for scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-fade-in-up');
+                }
+            });
+        }, observerOptions);
+
+        const elements = document.querySelectorAll('section > div');
+        elements.forEach(el => observer.observe(el));
+
+        return () => observer.disconnect();
+    }, []);
+
+    return (
+        <>
+            <Navbar 
+                isAuthenticated={isAuthenticated} 
+                openLoginPopup={openLoginPopup} 
+                openSignupPopup={openSignupPopup} 
+                handleLogout={handleLogout}
+            />
+            <HeroSection />
+            <FeaturesSection />
+            <HowItWorksSection />
+            <Footer />
+        </>
+    );
+};
+
+/**
+ * Main App component that handles routing and global state
+ */
+const App = () => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [isLoginPopupOpen, setIsLoginPopupOpen] = useState(false);
+    const [isSignupPopupOpen, setIsSignupPopupOpen] = useState(false);
+    const navigate = useNavigate();
+
+    // Check authentication status on mount
+    useEffect(() => {
+        const checkAuthStatus = async () => {
+            try {
+                const authenticated = AuthService.isAuthenticated();
+                setIsAuthenticated(authenticated);
+                if (authenticated) {
+                    const userInfo = AuthService.getUserInfo();
+                    setUser(userInfo);
+                }
+            } catch (error) {
+                console.error('Error checking auth status:', error);
+                setIsAuthenticated(false);
+                setUser(null);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        checkAuthStatus();
+    }, []);
+
+    // Handlers for popups
+    const openLoginPopup = () => {
+        setIsLoginPopupOpen(true);
+        setIsSignupPopupOpen(false);
     };
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('animate-fade-in-up');
-        }
-      });
-    }, observerOptions);
+    const openSignupPopup = () => {
+        setIsSignupPopupOpen(true);
+        setIsLoginPopupOpen(false);
+    };
 
-    const elements = document.querySelectorAll('section > div');
-    elements.forEach(el => observer.observe(el));
+    const closeAllPopups = () => {
+        setIsLoginPopupOpen(false);
+        setIsSignupPopupOpen(false);
+    };
 
-    return () => observer.disconnect();
-  }, []);
+    // Authentication Handlers
+    const handleLoginSuccess = () => {
+        const userInfo = AuthService.getUserInfo();
+        setUser(userInfo);
+        setIsAuthenticated(true);
+        closeAllPopups();
+        // Removed: navigate('/ask-ai');
+    };
 
-  return (
-    <>
-      <Navbar />
-      <HeroSection />
-      <FeaturesSection />
-      <HowItWorksSection />
-      <Footer />
-    </>
-  );
+    const handleSignupSuccess = () => {
+        const userInfo = AuthService.getUserInfo();
+        setUser(userInfo);
+        setIsAuthenticated(true);
+        closeAllPopups();
+        // Removed: navigate('/ask-ai');
+    };
+
+    const handleLogout = () => {
+        AuthService.logout();
+        setIsAuthenticated(false);
+        setUser(null);
+        navigate('/');
+    };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-900">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-500"></div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="min-h-screen bg-black text-white overflow-x-hidden">
+            <Routes>
+                <Route path="/" element={<LandingPage isAuthenticated={isAuthenticated} openLoginPopup={openLoginPopup} openSignupPopup={openSignupPopup} handleLogout={handleLogout} />} />
+                <Route path="/ask-ai" element={<AskAiPage isAuthenticated={isAuthenticated} onLogout={handleLogout} />} />
+                <Route 
+                    path="/profile" 
+                    element={<ProfilePage user={user} onLogout={handleLogout} />} 
+                />
+            </Routes>
+            
+            {/* Render popups conditionally */}
+            {isLoginPopupOpen && (
+                <SignIn
+                    closeAllPopups={closeAllPopups}
+                    onLogin={handleLoginSuccess}
+                    switchToSignup={openSignupPopup}
+                    AuthService={AuthService}
+                />
+            )}
+            {isSignupPopupOpen && (
+                <SignUp
+                    closeAllPopups={closeAllPopups}
+                    onSignup={handleSignupSuccess}
+                    switchToLogin={openLoginPopup}
+                    AuthService={AuthService}
+                />
+            )}
+        </div>
+    );
 };
 
-// This is the main App component that handles routing
-const App = () => {
-  return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden">
-      <style jsx>{`
-        @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .animate-fade-in-up {
-          animation: fade-in-up 0.8s ease-out forwards;
-        }
-        
-        html {
-          scroll-behavior: smooth;
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-          width: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-          background: #1a1a1a;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-          background: linear-gradient(to bottom, #ef4444, #ec4899);
-          border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-          background: linear-gradient(to bottom, #dc2626, #db2777);
-        }
-      `}</style>
-      
-      <Router>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/ask-ai" element={<AskAiPage />} />
-        </Routes>
-      </Router>
-    </div>
-  );
-};
+// Wrapper for App component to use useNavigate
+const AppWrapper = () => (
+    <Router>
+        <App />
+    </Router>
+);
 
-export default App;
+export default AppWrapper;

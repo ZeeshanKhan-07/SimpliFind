@@ -1,101 +1,171 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, X } from 'lucide-react';
 
-const SignIn = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+const SignIn = ({ onLogin, switchToSignup, closeAllPopups, AuthService }) => {
+    const [formData, setFormData] = useState({
+        email: '',
+        password: ''
+    });
+
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState('');
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+        if (error) setError('');
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+
+        if (!formData.email || !formData.password) {
+            setError('Please fill in all fields');
+            return;
+        }
+
+        if (!isValidEmail(formData.email)) {
+            setError('Please enter a valid email');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            await AuthService.login(formData);
+            onLogin();
+        } catch (err) {
+            setError(err.message || 'Login failed. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const isValidEmail = (email) => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    };
 
     return (
-        <div className="min-h-screen relative overflow-hidden flex items-center justify-center">
-            {/* Animated Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-pink-500 via-purple-600 to-blue-600">
-                {/* Large floating shapes */}
-                <div className="absolute top-20 left-20 w-96 h-96 bg-cyan-400/30 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute bottom-20 right-20 w-80 h-80 bg-pink-500/40 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1000ms'}}></div>
-                <div className="absolute top-1/2 left-10 w-64 h-64 bg-blue-500/30 rounded-full blur-2xl animate-pulse" style={{animationDelay: '1500ms'}}></div>
-                <div className="absolute bottom-40 left-1/3 w-48 h-48 bg-purple-500/40 rounded-full blur-2xl animate-pulse" style={{animationDelay: '2000ms'}}></div>
-                
-                {/* Medium shapes */}
-                <div className="absolute top-40 right-40 w-32 h-32 bg-cyan-300/50 rounded-full blur-xl animate-pulse" style={{animationDelay: '500ms'}}></div>
-                <div className="absolute bottom-60 left-60 w-40 h-40 bg-pink-400/40 rounded-full blur-xl animate-pulse" style={{animationDelay: '1800ms'}}></div>
-                <div className="absolute top-60 left-1/2 w-36 h-36 bg-blue-400/35 rounded-full blur-xl animate-pulse" style={{animationDelay: '1200ms'}}></div>
-                
-                {/* Small floating orbs */}
-                <div className="absolute top-32 right-60 w-16 h-16 bg-cyan-200/60 rounded-full blur-lg animate-pulse" style={{animationDelay: '800ms'}}></div>
-                <div className="absolute bottom-32 right-32 w-20 h-20 bg-purple-400/50 rounded-full blur-lg animate-pulse" style={{animationDelay: '1600ms'}}></div>
-                <div className="absolute top-3/4 left-40 w-12 h-12 bg-pink-300/60 rounded-full blur-md animate-pulse" style={{animationDelay: '400ms'}}></div>
-            </div>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
+            {/* Backdrop */}
+            <div
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                onClick={closeAllPopups}
+            ></div>
 
-            {/* Login Form */}
-            <div className="relative z-10 w-full max-w-md mx-4">
-                <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
-                    {/* Title */}
-                    <h1 className="text-4xl font-bold text-white text-center mb-8">Login</h1>
-                    
-                    {/* Username Input */}
-                    <div className="mb-6">
-                        <label className="block text-white/80 text-sm mb-2">Username or email</label>
-                        <input
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
-                            className="w-full px-4 py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-white/40 transition-all duration-300"
-                            placeholder="Enter your username or email"
-                        />
-                    </div>
-
-                    {/* Password Input */}
-                    <div className="mb-4">
-                        <div className="flex justify-between items-center mb-2">
-                            <label className="text-white/80 text-sm">Password</label>
-                            <a href="#" className="text-yellow-400 text-sm hover:text-yellow-300 transition-colors">
-                                Forgot password ?
-                            </a>
-                        </div>
-                        <div className="relative">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-4 py-3 pr-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-white/40 transition-all duration-300"
-                                placeholder="Enter your password"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
-                            >
-                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* Remember Me */}
-                    <div className="mb-8">
-                        <label className="flex items-center text-white/80 cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={rememberMe}
-                                onChange={(e) => setRememberMe(e.target.checked)}
-                                className="mr-3 w-4 h-4 rounded border-white/20 bg-white/10 text-red-500 focus:ring-red-500 focus:ring-offset-0"
-                            />
-                            <span className="text-sm">Remember me</span>
-                        </label>
-                    </div>
-
-                    {/* Login Button */}
-                    <button className="w-full bg-gradient-to-r from-red-500 to-pink-600 text-white py-4 rounded-xl font-semibold text-lg hover:from-red-600 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-red-500/25 mb-6">
-                        Login
+            {/* Modal Content */}
+            <div className="relative z-10 w-full max-w-sm sm:max-w-md animate-[modalSlideIn_0.3s_ease-out]">
+                <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl relative">
+                    <button
+                        onClick={closeAllPopups}
+                        className="absolute top-3 right-3 sm:top-4 sm:right-4 text-white/60 hover:text-white transition-colors"
+                    >
+                        <X size={24} />
                     </button>
 
-                    {/* Sign Up Link */}
+                    <h1 className="text-2xl sm:text-4xl font-bold text-white text-center mb-6 sm:mb-8">Login</h1>
+
+                    {error && (
+                        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm mb-4">
+                            {error}
+                        </div>
+                    )}
+                    
+                    <form onSubmit={handleSubmit}>
+                        <div className="mb-4 sm:mb-6">
+                            <label className="block text-white/80 text-sm mb-2" htmlFor="email">Username or email</label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                autoComplete="email"
+                                required
+                                value={formData.email}
+                                onChange={handleChange}
+                                disabled={loading}
+                                className="w-full px-3 py-2.5 sm:px-4 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-white/40 transition-all duration-300 text-sm sm:text-base"
+                                placeholder="Enter your username or email"
+                            />
+                        </div>
+
+                        <div className="mb-3 sm:mb-4">
+                            <div className="flex justify-between items-center mb-2">
+                                <label className="text-white/80 text-sm" htmlFor="password">Password</label>
+                                <a href="#" className="text-red-400 text-xs sm:text-sm hover:text-red-300 transition-colors">
+                                    Forgot password?
+                                </a>
+                            </div>
+                            <div className="relative">
+                                <input
+                                    id="password"
+                                    name="password"
+                                    autoComplete="current-password"
+                                    required
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    type={showPassword ? "text" : "password"}
+                                    disabled={loading}
+                                    className="w-full px-3 py-2.5 sm:px-4 sm:py-3 pr-10 sm:pr-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-white/40 transition-all duration-300 text-sm sm:text-base"
+                                    placeholder="Enter your password"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                                    disabled={loading}
+                                >
+                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="mb-6 sm:mb-8">
+                            <label className="flex items-center text-white/80 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={rememberMe}
+                                    onChange={(e) => setRememberMe(e.target.checked)}
+                                    className="mr-2 sm:mr-3 w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-white/20 bg-white/10 text-red-500 focus:ring-red-500 focus:ring-offset-0 accent-red-500"
+                                    disabled={loading}
+                                />
+                                <span className="text-xs sm:text-sm">Remember me</span>
+                            </label>
+                        </div>
+
+                        <button
+                            type="submit"
+                            className={`w-full text-white py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all duration-300 shadow-lg mb-4 sm:mb-6 ${
+                                loading
+                                    ? 'bg-gray-500 cursor-not-allowed'
+                                    : 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 transform hover:scale-105 hover:shadow-2xl hover:shadow-red-500/25'
+                            }`}
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <div className="flex items-center justify-center">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                    Signing in...
+                                </div>
+                            ) : (
+                                'Login'
+                            )}
+                        </button>
+                    </form>
+
                     <div className="text-center">
-                        <span className="text-white/70 text-sm">Don't have an account? </span>
-                        <a href="#" className="text-yellow-400 text-sm hover:text-yellow-300 transition-colors font-medium">
+                        <span className="text-white/70 text-xs sm:text-sm">Don't have an account? </span>
+                        <button
+                            onClick={switchToSignup}
+                            className="text-red-400 text-xs sm:text-sm hover:text-red-300 transition-colors font-medium"
+                        >
                             Sign up
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>
