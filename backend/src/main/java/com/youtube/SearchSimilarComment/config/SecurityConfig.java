@@ -47,6 +47,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/auth/**").permitAll() // Allow access to auth endpoints
                         .requestMatchers("/h2-console/**").permitAll() // Allow H2 console (development only)
+                        .requestMatchers("/api/v1/comments/**").permitAll()
+                        .requestMatchers("/api/chat/**").permitAll()
                         .anyRequest().authenticated() // Require authentication for all other requests
                 )
                 .sessionManagement(session -> session

@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/chat")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:3001", "http://localhost:5173"})
+@CrossOrigin(origins = "http://localhost:5173")
 @Slf4j
 public class ChatController {
 
