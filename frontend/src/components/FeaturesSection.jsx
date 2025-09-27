@@ -38,7 +38,6 @@ const AsymmetricalFeatures = () => {
   const cardsRef = useRef([]);
 
   useEffect(() => {
-    // Staggered fade-in for the heading and sub-heading
     gsap.fromTo([titleRef.current, titleRef.current.nextElementSibling], {
       opacity: 0,
       y: 50,
@@ -55,12 +54,11 @@ const AsymmetricalFeatures = () => {
       }
     });
 
-    // Parallax scroll animation for each card
     cardsRef.current.forEach((card, index) => {
       const isEven = index % 2 === 0;
       gsap.fromTo(card, {
         opacity: 0,
-        y: isEven ? 100 : 50, // Staggered y-position for asymmetry
+        y: isEven ? 100 : 50,
       }, {
         opacity: 1,
         y: 0,
@@ -74,7 +72,6 @@ const AsymmetricalFeatures = () => {
       });
     });
 
-    // Hover effect using GSAP
     cardsRef.current.forEach(card => {
       const gradient = card.querySelector('.gradient-border');
       gsap.set(gradient, {

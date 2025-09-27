@@ -2,7 +2,6 @@ import React from 'react';
 import { LogOut, User as UserIcon } from 'lucide-react';
 
 const ProfilePage = ({ user, onLogout }) => {
-    // Basic check to ensure user data is available
     if (!user) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-black text-white">

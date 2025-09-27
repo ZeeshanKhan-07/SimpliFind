@@ -1,9 +1,6 @@
 import axios from 'axios';
 
-/**
- * Authentication service for handling API requests
- * Centralizes all authentication-related HTTP calls to backend
- */
+
 class AuthService {
     constructor() {
         this.API_URL = 'http://localhost:8080/api/auth';

@@ -16,8 +16,9 @@ const HeroSection = () => {
     const [comments, setComments] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [userId, setUserId] = useState(null);
 
-    // Refs for GSAP animations
     const heroRef = useRef(null);
     const titleRef = useRef(null);
     const subtitleRef = useRef(null);
@@ -38,7 +39,6 @@ const HeroSection = () => {
 
     useEffect(() => {
         const ctx = gsap.context(() => {
-            // Set initial states
             gsap.set([titleRef.current, subtitleRef.current, descriptionRef.current, inputRef.current, buttonRef.current, statsRef.current], {
                 opacity: 0,
                 y: 50
@@ -49,7 +49,6 @@ const HeroSection = () => {
                 y: 20
             });
 
-            // Background animations
             gsap.fromTo('.bg-blur-1', {
                 scale: 0.8,
                 opacity: 0
@@ -82,7 +81,6 @@ const HeroSection = () => {
                 ease: "power2.out"
             });
 
-            // Main timeline
             const tl = gsap.timeline({ delay: 0.3 });
 
             tl.to(titleRef.current, {
@@ -129,7 +127,6 @@ const HeroSection = () => {
                 ease: "power3.out"
             }, "-=0.2");
 
-            // Floating animations for background elements
             gsap.to('.bg-blur-1', {
                 y: -20,
                 duration: 3,
@@ -154,7 +151,6 @@ const HeroSection = () => {
                 ease: "none"
             });
 
-            // Bounce animation for chevron
             gsap.to(chevronRef.current, {
                 y: -10,
                 duration: 1.5,
@@ -169,12 +165,22 @@ const HeroSection = () => {
         return () => ctx.revert();
     }, []);
 
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem('user')); 
+        if (user && user.id) {
+            setIsLoggedIn(true);
+            setUserId(user.id);
+        } else {
+            setIsLoggedIn(false);
+            setUserId(null);
+        }
+    }, []);
+
     const fetchComments = useCallback(async () => {
         const videoId = extractVideoId(videoUrl);
 
         if (!videoId) {
             setError("Please enter a valid YouTube URL.");
-            // Error animation
             gsap.fromTo(inputRef.current, {
                 x: 0
             }, {
@@ -190,7 +196,6 @@ const HeroSection = () => {
         setIsLoading(true);
         setError(null);
 
-        // Loading animation for button
         gsap.to(buttonRef.current, {
             scale: 0.95,
             duration: 0.1,
@@ -213,11 +218,11 @@ const HeroSection = () => {
             
             setComments(data.comments || []); 
             setIsOpenSearchMenu(true);
+
         } catch (err) {
             console.error("Failed to fetch comments:", err);
             setError(`Failed to load comments: ${err.message}. Please check the URL and try again.`);
             
-            // Error shake animation
             gsap.fromTo(inputRef.current, {
                 x: 0
             }, {
@@ -230,7 +235,7 @@ const HeroSection = () => {
         } finally {
             setIsLoading(false);
         }
-    }, [videoUrl]);
+    }, [videoUrl, isLoggedIn, userId]);
 
     const openSearchMenu = () => {
         fetchComments();
@@ -243,7 +248,6 @@ const HeroSection = () => {
         setComments([]);
     }, []);
 
-    // Hover animations
     const handleButtonHover = (isHovering) => {
         gsap.to(buttonRef.current, {
             scale: isHovering ? 1.05 : 1,

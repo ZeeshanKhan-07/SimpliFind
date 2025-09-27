@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import './App.css';
 
-// Components for the landing page
 import Navbar from './components/Navbar';
 import HeroSection from './components/HeroSection';
 import FeaturesSection from './components/FeaturesSection';
@@ -10,18 +9,13 @@ import HowItWorksSection from './components/HowItWorksSection';
 import Footer from './components/Footer';
 import AskAiPage from './pages/AskAiPage';
 
-// Components for authentication and dashboard
 import SignIn from './components/Login/SignIn';
 import SignUp from './components/Login/SignUp';
 import AuthService from './services/AuthService';
 import ProfilePage from './pages/ProfilePage'; 
 
-/**
- * Component for the static landing page content
- */
 const LandingPage = ({ isAuthenticated, openLoginPopup, openSignupPopup, handleLogout }) => {
     useEffect(() => {
-        // Smooth scroll behavior for anchor links
         const links = document.querySelectorAll('a[href^="#"]');
         links.forEach(link => {
             link.addEventListener('click', (e) => {
@@ -36,7 +30,6 @@ const LandingPage = ({ isAuthenticated, openLoginPopup, openSignupPopup, handleL
             });
         });
 
-        // Intersection Observer for scroll animations
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
@@ -72,9 +65,6 @@ const LandingPage = ({ isAuthenticated, openLoginPopup, openSignupPopup, handleL
     );
 };
 
-/**
- * Main App component that handles routing and global state
- */
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
@@ -83,7 +73,6 @@ const App = () => {
     const [isSignupPopupOpen, setIsSignupPopupOpen] = useState(false);
     const navigate = useNavigate();
 
-    // Check authentication status on mount
     useEffect(() => {
         const checkAuthStatus = async () => {
             try {
@@ -105,7 +94,6 @@ const App = () => {
         checkAuthStatus();
     }, []);
 
-    // Handlers for popups
     const openLoginPopup = () => {
         setIsLoginPopupOpen(true);
         setIsSignupPopupOpen(false);
@@ -121,13 +109,11 @@ const App = () => {
         setIsSignupPopupOpen(false);
     };
 
-    // Authentication Handlers
     const handleLoginSuccess = () => {
         const userInfo = AuthService.getUserInfo();
         setUser(userInfo);
         setIsAuthenticated(true);
         closeAllPopups();
-        // Removed: navigate('/ask-ai');
     };
 
     const handleSignupSuccess = () => {
@@ -135,7 +121,6 @@ const App = () => {
         setUser(userInfo);
         setIsAuthenticated(true);
         closeAllPopups();
-        // Removed: navigate('/ask-ai');
     };
 
     const handleLogout = () => {
@@ -185,7 +170,6 @@ const App = () => {
     );
 };
 
-// Wrapper for App component to use useNavigate
 const AppWrapper = () => (
     <Router>
         <App />

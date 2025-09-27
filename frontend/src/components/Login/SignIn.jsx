@@ -53,13 +53,11 @@ const SignIn = ({ onLogin, switchToSignup, closeAllPopups, AuthService }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
-            {/* Backdrop */}
             <div
                 className="absolute inset-0 bg-black/50 backdrop-blur-sm"
                 onClick={closeAllPopups}
             ></div>
 
-            {/* Modal Content */}
             <div className="relative z-10 w-full max-w-sm sm:max-w-md animate-[modalSlideIn_0.3s_ease-out]">
                 <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl relative">
                     <button

@@ -1,4 +1,3 @@
-// JwtAuthenticationFilter.java
 package com.youtube.SearchSimilarComment.config;
 
 import com.youtube.SearchSimilarComment.service.CustomUserDetailsService;
@@ -17,11 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-/**
- * JWT Authentication Filter
- * Intercepts every HTTP request to check for valid JWT token in Authorization header
- * If valid token found, sets up Spring Security authentication context
- */
+
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     

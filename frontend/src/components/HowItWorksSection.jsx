@@ -220,9 +220,7 @@ const HowItWorksSection = () => {
 
   return (
     <section ref={sectionRef} id="how-it-works" className="py-32 bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white overflow-hidden relative">
-      {/* New Background Animation: Glowing Lines and Shapes */}
       <div className="absolute inset-0 z-0 overflow-hidden">
-        {/* Dynamic Glowing Lines */}
         <div className="absolute top-0 left-0 w-full h-full">
           {Array.from({ length: 10 }).map((_, i) => (
             <div
@@ -239,7 +237,6 @@ const HowItWorksSection = () => {
             ></div>
           ))}
         </div>
-        {/* Pulsating Abstract Shapes */}
         <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-pink-600/15 rounded-full blur-3xl animate-pulse-slow -translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-red-500/15 rounded-xl blur-3xl animate-pulse-slow delay-1500"></div>
       </div>
@@ -271,7 +268,7 @@ const HowItWorksSection = () => {
         }
         .animate-line-flow {
           animation: line-flow 15s infinite ease-in-out;
-          --rotation: 0deg; /* Default, overridden by inline style */
+          --rotation: 0deg; 
         }
         .animate-pulse-slow {
           animation: pulse-slow 8s infinite ease-in-out;

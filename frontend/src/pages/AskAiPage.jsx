@@ -23,36 +23,29 @@ const ChatApp = ({ initialMessage, onBack }) => {
   const inputSectionRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
-  // GSAP animations
   useEffect(() => {
-    // Import GSAP dynamically
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js';
     script.onload = () => {
       const { gsap } = window;
       
-      // Initial page load animation
       const tl = gsap.timeline();
       
-      // Header animation
       tl.fromTo(headerRef.current, 
         { y: -50, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
       )
-      // Messages container
       .fromTo(messagesContainerRef.current,
         { y: 30, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" },
         "-=0.4"
       )
-      // Input section
       .fromTo(inputSectionRef.current,
         { y: 50, opacity: 0, scale: 0.95 },
         { y: 0, opacity: 1, scale: 1, duration: 0.7, ease: "back.out(1.2)" },
         "-=0.3"
       );
 
-      // Animate initial message
       const initialMessageEl = document.querySelector('[data-message-id="1"]');
       if (initialMessageEl) {
         gsap.fromTo(initialMessageEl,
@@ -70,7 +63,6 @@ const ChatApp = ({ initialMessage, onBack }) => {
     };
   }, []);
 
-  // Animate new messages
   useEffect(() => {
     if (window.gsap && messages.length > 1) {
       const lastMessage = messages[messages.length - 1];
@@ -79,13 +71,11 @@ const ChatApp = ({ initialMessage, onBack }) => {
       if (messageEl) {
         const { gsap } = window;
         if (lastMessage.sender === 'user') {
-          // User message animation (slide in from right)
           gsap.fromTo(messageEl,
             { x: 50, opacity: 0, scale: 0.8 },
             { x: 0, opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.4)" }
           );
         } else {
-          // AI message animation (slide in from left with bounce)
           gsap.fromTo(messageEl,
             { x: -50, opacity: 0, scale: 0.9 },
             { x: 0, opacity: 1, scale: 1, duration: 0.5, ease: "elastic.out(1, 0.8)" }
@@ -95,7 +85,6 @@ const ChatApp = ({ initialMessage, onBack }) => {
     }
   }, [messages]);
 
-  // Animate typing indicator
   useEffect(() => {
     if (window.gsap) {
       const { gsap } = window;
@@ -149,7 +138,6 @@ const ChatApp = ({ initialMessage, onBack }) => {
   const sendMessage = async () => {
     if (!inputValue.trim() || isTyping) return;
 
-    // Animate send button
     if (window.gsap) {
       const { gsap } = window;
       const sendBtn = document.querySelector('.send-button');
@@ -215,7 +203,6 @@ const ChatApp = ({ initialMessage, onBack }) => {
   const clearChat = () => {
     if (window.gsap) {
       const { gsap } = window;
-      // Animate messages out before clearing
       gsap.to('.message-item', {
         x: -100,
         opacity: 0,
@@ -245,7 +232,6 @@ const ChatApp = ({ initialMessage, onBack }) => {
       await navigator.clipboard.writeText(text);
       setCopiedMessageId(messageId);
       
-      // Animate copy feedback
       if (window.gsap) {
         const { gsap } = window;
         const copyBtn = document.querySelector(`[data-copy-btn="${messageId}"]`);
@@ -271,7 +257,6 @@ const ChatApp = ({ initialMessage, onBack }) => {
 
   return (
     <div className="h-screen bg-[#212121] flex flex-col overflow-hidden">
-      {/* Header Section - Fixed */}
       <div ref={headerRef} className="flex-shrink-0 flex flex-col items-center pt-8 pb-4">
         <div className="w-16 h-16 bg-gradient-to-r rounded-2xl p-1 shadow-2xl hover:scale-105 transition-transform duration-300">
           <img
@@ -282,8 +267,6 @@ const ChatApp = ({ initialMessage, onBack }) => {
         </div>
         <h2 className="text-3xl font-bold text-white mt-6">How can i help you?</h2>
       </div>
-
-      {/* Chat Messages Section - Scrollable */}
       <div className="flex-1 flex flex-col min-h-0 px-4 max-w-4xl mx-auto w-full">
         <div ref={messagesContainerRef} className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar pb-4">
           {messages.map((message) => (
@@ -355,7 +338,6 @@ const ChatApp = ({ initialMessage, onBack }) => {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Section - Fixed at bottom */}
         <div ref={inputSectionRef} className="flex-shrink-0 py-4">
           <div className="w-full bg-[#2d2d2d] rounded-2xl shadow-lg border border-[#3d3d3d] p-4 hover:border-[#4d4d4d] transition-all duration-300">
             <div className="flex items-center space-x-3">
@@ -398,9 +380,8 @@ const ChatApp = ({ initialMessage, onBack }) => {
           animation: bounce 1s infinite;
         }
 
-        /* Custom Scrollbar */
         .custom-scrollbar {
-          scrollbar-width: thin; /* Firefox */
+          scrollbar-width: thin;
           scrollbar-color: #6b7280 transparent;
         }
         .custom-scrollbar::-webkit-scrollbar {
@@ -418,10 +399,9 @@ const ChatApp = ({ initialMessage, onBack }) => {
           background-color: #9ca3af;
         }
         .custom-scrollbar::-webkit-scrollbar-button {
-          display: none; /* remove arrows */
+          display: none; 
         }
 
-        /* Smooth transitions for all interactive elements */
         * {
           transition: transform 0.2s ease, box-shadow 0.2s ease;
         }

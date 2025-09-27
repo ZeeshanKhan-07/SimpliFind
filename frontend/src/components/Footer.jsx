@@ -5,9 +5,7 @@ const Footer = () => {
     return (
         <footer className="bg-gradient-to-t from-black to-gray-950 py-16 sm:py-20 border-t border-gray-800 shadow-inner">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Adjusting grid for small screens: default to single column, md: to 4 columns */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-y-12 sm:gap-y-16 md:gap-x-12 lg:gap-x-20">
-                    {/* Brand Section */}
                     <div className="col-span-1 md:col-span-2 flex flex-col items-center text-center md:items-start md:text-left">
                         <div className="flex items-center space-x-3 mb-6 group cursor-pointer">
                             <div className="relative">
@@ -34,7 +32,6 @@ const Footer = () => {
                         </div>
                     </div>
 
-                    {/* Navigation Links Section */}
                     <div className="col-span-1 md:col-span-2 mt-8 md:mt-12">
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                             <a href="#" className="text-gray-300 hover:text-white transition-colors duration-300 font-medium text-lg text-center md:text-left hover:text-red-400">
@@ -53,7 +50,6 @@ const Footer = () => {
                     </div>
                 </div>
 
-                {/* Copyright Section */}
                 <div className="border-t border-gray-800 mt-16 pt-8 text-center">
                     <p className="text-gray-500 text-base">
                         © 2025 SimpliFind. All rights reserved. Built with <span className="text-red-500">❤️</span> for the YouTube community.

@@ -7,7 +7,6 @@ import lombok.Setter;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -45,19 +44,13 @@ public class User implements UserDetails {
         this.lastName = lastName;
     }
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SearchHistory> searchHistory;
-    
-    // UserDetails interface methods required by Spring Security
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Return empty list - no specific roles for this simple example
         return Collections.emptyList();
     }
 
     @Override
     public String getUsername() {
-        // Use email as username
         return email;
     }
 

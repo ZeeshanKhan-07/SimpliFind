@@ -1,4 +1,3 @@
-// SecurityConfig.java
 package com.youtube.SearchSimilarComment.config;
 
 import com.youtube.SearchSimilarComment.service.CustomUserDetailsService;
@@ -22,10 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
-/**
- * Spring Security Configuration
- * Configures authentication, authorization, CORS, and JWT filter
- */
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -36,40 +32,34 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthFilter;
     
-    /**
-     * Configure HTTP security
-     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless API
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) 
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/api/auth/**").permitAll() // Allow access to auth endpoints
-                        .requestMatchers("/h2-console/**").permitAll() // Allow H2 console (development only)
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/h2-console/**").permitAll() 
                         .requestMatchers("/api/v1/comments/**").permitAll()
                         .requestMatchers("/api/chat/**").permitAll()
-                        .anyRequest().authenticated() // Require authentication for all other requests
+                        .anyRequest().authenticated() 
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless sessions (JWT)
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .authenticationProvider(authenticationProvider()) // Set custom authentication provider
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class); // Add JWT filter
+                .authenticationProvider(authenticationProvider())
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         
-        // Allow H2 console frames (development only)
         http.headers(headers -> headers.frameOptions().disable());
         
         return http.build();
     }
     
-    /**
-     * CORS configuration to allow frontend requests
-     */
+   
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList("*")); // Allow all origins (configure for production)
+        configuration.setAllowedOriginPatterns(Arrays.asList("*")); 
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);
@@ -79,17 +69,12 @@ public class SecurityConfig {
         return source;
     }
     
-    /**
-     * Password encoder bean using BCrypt
-     */
+    
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
     
-    /**
-     * Authentication provider configuration
-     */
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -98,9 +83,7 @@ public class SecurityConfig {
         return authProvider;
     }
     
-    /**
-     * Authentication manager bean
-     */
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
