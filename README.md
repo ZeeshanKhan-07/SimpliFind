@@ -1,4 +1,4 @@
-#SimpliFind: AI-Powered YouTube Comment Discovery
+🔎 SimpliFind: AI-Powered YouTube Comment Discovery
 Revolutionizing how you discover and analyze YouTube comments with cutting-edge AI-powered search technology. SimpliFind goes beyond simple keyword searches, using semantic understanding to find the most relevant conversations and insights buried in millions of comments.
 
 ✨ Project Highlights
