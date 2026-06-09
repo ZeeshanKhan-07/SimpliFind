@@ -6,13 +6,9 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.youtube.SearchSimilarComment.entity.User;
+import com.youtube.SearchSimilarComment.entity.RefreshToken;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID>{
-
-    Optional<User> findByEmail(String email);
-
-    boolean existsByEmail(String email);
-    
+public interface RefreshTokenRepository extends JpaRepository<RefreshToken, UUID> {
+    Optional<RefreshToken> findByJti(String jti);
 }
