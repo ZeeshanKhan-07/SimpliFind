@@ -1,0 +1,61 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: youtube-comments-fetcher
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/simplifind?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: SQL@0718
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: zeeshan071845khan@gmail.com
+    password: hidllydkoxfceqkf
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+jwt:
+  secret: mysupersecretkeyforjwtauthentication!!
+  expiration: 86400000
+
+youtube:
+  api:
+    key: AIzaSyDjeuYFC_FtXh0csYbX6QlyvGcZWOI3QJ4
+    base-url: https://www.googleapis.com/youtube/v3
+    max-results: 100
+
+gemini:
+  api:
+    key: AIzaSyAjCDrVEaUMuV3d4Jovu9lLcHsLVnTlyAk
+    url: https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent
+
+logging:
+  level:
+    com.youtubefetcher: DEBUG
+    org.springframework.web: INFO
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+  file:
+    name: logs/youtube-fetcher.log
