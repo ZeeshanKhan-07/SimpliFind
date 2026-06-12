@@ -1,8 +1,7 @@
 package com.youtube.SearchSimilarComment.security;
 
-import java.sql.Date;
 import java.time.Instant;
-import java.util.Map;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.crypto.SecretKey;
@@ -17,10 +16,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Service
 public class JwtService {
 
@@ -36,8 +33,10 @@ public class JwtService {
             @Value("${security.jwt.issuer}") String jwtIssuer) {
 
         if (secretKey == null || secretKey.length() < 64) {
-            throw new IllegalArgumentException("Invalid secret key.");
+            throw new IllegalArgumentException(
+                    "JWT secret key must be at least 64 characters long");
         }
+
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
         this.accessTokenExpiration = accessTokenExpiration;
         this.refreshTokenExpiration = refreshTokenExpiration;
@@ -81,28 +80,23 @@ public class JwtService {
                     .parseClaimsJws(token)
                     .getBody();
         } catch (Exception e) {
-            throw new RuntimeException("Invalid token", e);
+            throw new RuntimeException("Invalid JWT token", e);
         }
     }
 
     public boolean isAccessToken(String token) {
-        Claims c = parse(token);
-        return "access".equals(c.get("typ"));
+        return "access".equals(parse(token).get("typ"));
     }
 
     public boolean isRefreshToken(String token) {
-        Claims c = parse(token);
-        return "refresh".equals(c.get("typ"));
+        return "refresh".equals(parse(token).get("typ"));
     }
 
     public UUID getUserId(String token) {
-        Claims c = parse(token);
-        return UUID.fromString(c.getSubject());
+        return UUID.fromString(parse(token).getSubject());
     }
 
     public String getJti(String token) {
-        Claims c = parse(token);
-        return c.getId();
+        return parse(token).getId();
     }
-
 }

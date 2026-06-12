@@ -8,6 +8,7 @@ import lombok.Setter;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -96,7 +97,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        throw new UnsupportedOperationException("Unimplemented method 'getAuthorities'");
+        return Collections.emptyList();
     }
 
 }

@@ -4,12 +4,14 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.youtube.SearchSimilarComment.service.ChatService;
+import com.youtube.SearchSimilarComment.service.GeminiService;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,30 +23,37 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ChatController {
 
-    private final ChatService chatService;
+    // private final ChatService chatService;
+    private final GeminiService geminiService;
 
-    @PostMapping("/ask")
-    public ResponseEntity<?> askQuestion(@RequestBody Map<String, String> payload) {
-        try {
-            String question = payload.get("question"); // Changed to lowercase for consistency
+    // @PostMapping("/ask")
+    // public ResponseEntity<?> askQuestion(@RequestBody Map<String, String> payload) {
+    //     try {
+    //         String question = payload.get("question"); // Changed to lowercase for consistency
             
-            if (question == null || question.trim().isEmpty()) {
-                return ResponseEntity.badRequest()
-                    .body(Map.of("error", "Question is required"));
-            }
+    //         if (question == null || question.trim().isEmpty()) {
+    //             return ResponseEntity.badRequest()
+    //                 .body(Map.of("error", "Question is required"));
+    //         }
 
-            log.info("Received question: {}", question);
-            String answer = chatService.getAnswer(question);
+    //         log.info("Received question: {}", question);
+    //         String answer = chatService.getAnswer(question);
             
-            return ResponseEntity.ok(Map.of(
-                "answer", answer,
-                "status", "success"
-            ));
+    //         return ResponseEntity.ok(Map.of(
+    //             "answer", answer,
+    //             "status", "success"
+    //         ));
             
-        } catch (Exception e) {
-            log.error("Error processing chat request", e);
-            return ResponseEntity.internalServerError()
-                .body(Map.of("error", "Internal server error"));
-        }
+    //     } catch (Exception e) {
+    //         log.error("Error processing chat request", e);
+    //         return ResponseEntity.internalServerError()
+    //             .body(Map.of("error", "Internal server error"));
+    //     }
+    // }
+
+    @GetMapping("/ask")
+    public String askGeminiAPI(@RequestBody String prompt) {
+        return geminiService.askGemini(prompt);
     }
+    
 }

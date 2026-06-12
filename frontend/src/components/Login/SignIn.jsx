@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, X } from 'lucide-react';
+import toast from 'react-hot-toast';
+import useAuth from '../../store/UseAuth';
 
-const SignIn = ({ onLogin, switchToSignup, closeAllPopups, AuthService }) => {
+const SignIn = ({ onLogin, switchToSignup, closeAllPopups }) => {
+    const { login, authLoading } = useAuth();
+
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -9,15 +13,11 @@ const SignIn = ({ onLogin, switchToSignup, closeAllPopups, AuthService }) => {
 
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
-    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        setFormData(prev => ({ ...prev, [name]: value }));
         if (error) setError('');
     };
 
@@ -35,15 +35,28 @@ const SignIn = ({ onLogin, switchToSignup, closeAllPopups, AuthService }) => {
             return;
         }
 
-        setLoading(true);
-
         try {
-            await AuthService.login(formData);
+            await login(formData);
+
+            toast.success('Logged in successfully!', {
+                duration: 3000,
+                position: 'top-right',
+                style: {
+                    background: '#1a1a2e',
+                    color: '#fff',
+                    border: '1px solid rgba(255,255,255,0.15)',
+                    borderRadius: '12px',
+                    fontSize: '14px',
+                },
+                iconTheme: {
+                    primary: '#f87171',
+                    secondary: '#fff',
+                },
+            });
+
             onLogin();
         } catch (err) {
             setError(err.message || 'Login failed. Please try again.');
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -56,7 +69,7 @@ const SignIn = ({ onLogin, switchToSignup, closeAllPopups, AuthService }) => {
             <div
                 className="absolute inset-0 bg-black/50 backdrop-blur-sm"
                 onClick={closeAllPopups}
-            ></div>
+            />
 
             <div className="relative z-10 w-full max-w-sm sm:max-w-md animate-[modalSlideIn_0.3s_ease-out]">
                 <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-2xl relative">
@@ -67,17 +80,22 @@ const SignIn = ({ onLogin, switchToSignup, closeAllPopups, AuthService }) => {
                         <X size={24} />
                     </button>
 
-                    <h1 className="text-2xl sm:text-4xl font-bold text-white text-center mb-6 sm:mb-8">Login</h1>
+                    <h1 className="text-2xl sm:text-4xl font-bold text-white text-center mb-6 sm:mb-8">
+                        Login
+                    </h1>
 
                     {error && (
                         <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm mb-4">
                             {error}
                         </div>
                     )}
-                    
+
                     <form onSubmit={handleSubmit}>
+                        {/* Email */}
                         <div className="mb-4 sm:mb-6">
-                            <label className="block text-white/80 text-sm mb-2" htmlFor="email">Username or email</label>
+                            <label className="block text-white/80 text-sm mb-2" htmlFor="email">
+                                Username or email
+                            </label>
                             <input
                                 id="email"
                                 name="email"
@@ -86,16 +104,22 @@ const SignIn = ({ onLogin, switchToSignup, closeAllPopups, AuthService }) => {
                                 required
                                 value={formData.email}
                                 onChange={handleChange}
-                                disabled={loading}
+                                disabled={authLoading}
                                 className="w-full px-3 py-2.5 sm:px-4 sm:py-3 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-white/40 transition-all duration-300 text-sm sm:text-base"
                                 placeholder="Enter your username or email"
                             />
                         </div>
 
+                        {/* Password */}
                         <div className="mb-3 sm:mb-4">
                             <div className="flex justify-between items-center mb-2">
-                                <label className="text-white/80 text-sm" htmlFor="password">Password</label>
-                                <a href="#" className="text-red-400 text-xs sm:text-sm hover:text-red-300 transition-colors">
+                                <label className="text-white/80 text-sm" htmlFor="password">
+                                    Password
+                                </label>
+                                <a
+                                    href="#"
+                                    className="text-red-400 text-xs sm:text-sm hover:text-red-300 transition-colors"
+                                >
                                     Forgot password?
                                 </a>
                             </div>
@@ -107,8 +131,8 @@ const SignIn = ({ onLogin, switchToSignup, closeAllPopups, AuthService }) => {
                                     required
                                     value={formData.password}
                                     onChange={handleChange}
-                                    type={showPassword ? "text" : "password"}
-                                    disabled={loading}
+                                    type={showPassword ? 'text' : 'password'}
+                                    disabled={authLoading}
                                     className="w-full px-3 py-2.5 sm:px-4 sm:py-3 pr-10 sm:pr-12 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:border-white/40 transition-all duration-300 text-sm sm:text-base"
                                     placeholder="Enter your password"
                                 />
@@ -116,13 +140,14 @@ const SignIn = ({ onLogin, switchToSignup, closeAllPopups, AuthService }) => {
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
                                     className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
-                                    disabled={loading}
+                                    disabled={authLoading}
                                 >
                                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                 </button>
                             </div>
                         </div>
 
+                        {/* Remember Me */}
                         <div className="mb-6 sm:mb-8">
                             <label className="flex items-center text-white/80 cursor-pointer">
                                 <input
@@ -130,24 +155,25 @@ const SignIn = ({ onLogin, switchToSignup, closeAllPopups, AuthService }) => {
                                     checked={rememberMe}
                                     onChange={(e) => setRememberMe(e.target.checked)}
                                     className="mr-2 sm:mr-3 w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-white/20 bg-white/10 text-red-500 focus:ring-red-500 focus:ring-offset-0 accent-red-500"
-                                    disabled={loading}
+                                    disabled={authLoading}
                                 />
                                 <span className="text-xs sm:text-sm">Remember me</span>
                             </label>
                         </div>
 
+                        {/* Submit */}
                         <button
                             type="submit"
                             className={`w-full text-white py-3 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all duration-300 shadow-lg mb-4 sm:mb-6 ${
-                                loading
+                                authLoading
                                     ? 'bg-gray-500 cursor-not-allowed'
                                     : 'bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 transform hover:scale-105 hover:shadow-2xl hover:shadow-red-500/25'
                             }`}
-                            disabled={loading}
+                            disabled={authLoading}
                         >
-                            {loading ? (
+                            {authLoading ? (
                                 <div className="flex items-center justify-center">
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
                                     Signing in...
                                 </div>
                             ) : (
@@ -157,7 +183,9 @@ const SignIn = ({ onLogin, switchToSignup, closeAllPopups, AuthService }) => {
                     </form>
 
                     <div className="text-center">
-                        <span className="text-white/70 text-xs sm:text-sm">Don't have an account? </span>
+                        <span className="text-white/70 text-xs sm:text-sm">
+                            Don't have an account?{' '}
+                        </span>
                         <button
                             onClick={switchToSignup}
                             className="text-red-400 text-xs sm:text-sm hover:text-red-300 transition-colors font-medium"
