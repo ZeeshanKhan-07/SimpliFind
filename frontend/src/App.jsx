@@ -20,6 +20,7 @@ import AuthService from "./services/AuthService";
 import ProfilePage from "./pages/ProfilePage";
 import { Toaster } from "react-hot-toast";
 import LoginPage from "./components/Login/LoginPage";
+import About from "./components/About";
 
 const App = () => {
   return (
@@ -55,8 +56,9 @@ const App = () => {
           element={
             <>
               <HeroSection />
-              <FeaturesSection />
+              <About />
               <HowItWorksSection />
+              <FeaturesSection />
               <Footer />
             </>
           }

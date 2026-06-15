@@ -1,378 +1,300 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Youtube, Search, MessageCircle, ArrowRight } from 'lucide-react';
+import HIWImage1 from '../images/HIWImage1.svg';
+import HIWImage2 from '../images/HIWImage2.svg';
+import HIWImage3 from '../images/HIWImage3.svg';
+import HIWImage4 from '../images/HIWImage4.svg';
+import HIWImage5 from '../images/HIWImage5.svg';
+import HIWImage6 from '../images/HIWImage6.svg';
+import HIWImage7 from '../images/HIWImage7.svg';
+import HIWImage8 from '../images/HIWImage8.svg';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const HowItWorksSection = () => {
-  const sectionRef = useRef(null);
-  const titleRef = useRef(null);
-  const stepRefs = useRef([]);
-  const lineRef = useRef(null);
+const steps = [
+    { id: 1, image: HIWImage1, caption: "There are thousands of comments. How can I find the relevant ones? I don't have much time." },
+    { id: 2, image: HIWImage2, caption: 'Why am I afraid? I have SimpliFind.' },
+    { id: 3, image: HIWImage3, caption: 'Found relevant comments in seconds among thousands of comments.' },
+    { id: 4, image: HIWImage4, caption: 'Yay! I saved a lot of time.' },
+    { id: 5, image: HIWImage5, caption: 'Wait, I have a question about a comment.' },
+    { id: 6, image: HIWImage6, caption: "Hi! I'm your AI assistant. Ask me anything about this comment." },
+    { id: 7, image: HIWImage7, caption: "I think you've got your answer now." },
+    { id: 8, image: HIWImage8, caption: 'Thanks, SimpliFind!' },
+];
 
-  const steps = [
-    {
-      number: "01",
-      title: "Paste Video URL",
-      description: "Simply paste any YouTube video URL into our search box and watch the magic begin.",
-      icon: <Youtube className="w-12 h-12" />,
-      color: "from-red-500 to-pink-600",
-      accent: "red-500",
-      demo: "https://youtube.com/watch?v=..."
-    },
-    {
-      number: "02",
-      title: "Describe Your Search",
-      description: "Tell us what kind of comments you're looking for using natural language queries.",
-      icon: <Search className="w-12 h-12" />,
-      color: "from-red-500 to-pink-600",
-      accent: "red-500",
-      demo: "Find funny comments about..."
-    },
-    {
-      number: "03",
-      title: "Get Smart Results",
-      description: "Our AI analyzes thousands of comments and returns the most relevant matches instantly.",
-      icon: <MessageCircle className="w-12 h-12" />,
-      color: "from-red-500 to-pink-600",
-      accent: "red-500",
-      demo: "💡 Found 247 matching comments"
-    }
-  ];
+// Card size in px — used to compute arrow vertical position
+const CARD_SIZE = 160; // matches w-40 h-40
+const BADGE_H   = 36 + 12; // badge height + mb-3
 
-  const addToRefs = (el) => {
-    if (el && !stepRefs.current.includes(el)) {
-      stepRefs.current.push(el);
-    }
-  };
+// Horizontal arrow — simple clean line with arrowhead
+const HArrowSVG = ({ flip = false }) => (
+    <svg
+        viewBox="0 0 80 20"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{ transform: flip ? 'scaleX(-1)' : 'none' }}
+        className="w-full h-full"
+    >
+        <line x1="4" y1="10" x2="70" y2="10" stroke="#9ca3af" strokeWidth="1.6" strokeLinecap="round" />
+        <polyline points="60,3 74,10 60,17" fill="none" stroke="#9ca3af" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+);
 
-  const animateDataFlow = () => {
-    const flowTl = gsap.timeline();
-    if (lineRef.current) {
-      flowTl.to(lineRef.current, {
-        strokeDashoffset: 0,
-        duration: 1.5,
-        ease: "power2.inOut",
-      });
-    }
-  };
+// Vertical arrow — points downward
+const VArrowSVG = () => (
+    <svg viewBox="0 0 20 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+        <line x1="10" y1="4" x2="10" y2="70" stroke="#9ca3af" strokeWidth="1.6" strokeLinecap="round" />
+        <polyline points="3,60 10,74 17,60" fill="none" stroke="#9ca3af" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+);
 
-  useEffect(() => {
-    const masterTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 70%",
-        end: "bottom 30%",
-        toggleActions: "play none none reverse",
-        onEnter: () => {
-          setTimeout(animateDataFlow, 1500);
-        }
-      }
-    });
+const HowItWorks = () => {
+    const sectionRef  = useRef(null);
+    const headingRef  = useRef(null);
+    const card1Refs   = useRef([]); // row 1 cards (steps 1-4)
+    const card2Refs   = useRef([]); // row 2 cards (steps 5-8, visual order 8→5)
+    const ha1Refs     = useRef([]); // row 1 h-arrows
+    const ha2Refs     = useRef([]); // row 2 h-arrows
+    const vaRef       = useRef(null);
 
-    masterTl.fromTo(titleRef.current, {
-      opacity: 0,
-      y: 100,
-      scale: 0.8,
-      rotationX: 45,
-    }, {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      rotationX: 0,
-      duration: 1.5,
-      ease: "back.out(2)",
-    })
-    .fromTo(titleRef.current.nextElementSibling, {
-      opacity: 0,
-      y: 30,
-    }, {
-      opacity: 1,
-      y: 0,
-      duration: 1,
-      ease: "power3.out",
-    }, "-=0.8");
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+            // Heading
+            gsap.fromTo(headingRef.current,
+                { y: 28, opacity: 0 },
+                { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out',
+                  scrollTrigger: { trigger: headingRef.current, start: 'top 86%' } }
+            );
 
-    stepRefs.current.forEach((step, index) => {
-      const delay = index * 0.4;
-      
-      masterTl.fromTo(step, {
-        opacity: 0,
-        y: 100,
-        scale: 0.6,
-        rotationY: 45,
-      }, {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        rotationY: 0,
-        duration: 1.2,
-        ease: "back.out(1.7)",
-      }, delay)
-      .fromTo(step.querySelector('.step-number'), {
-        scale: 0,
-        rotation: -180,
-      }, {
-        scale: 1,
-        rotation: 0,
-        duration: 0.8,
-        ease: "elastic.out(1, 0.8)",
-      }, delay + 0.3)
-      .fromTo(step.querySelector('.step-icon-container'), {
-        scale: 0,
-        rotation: 180,
-      }, {
-        scale: 1,
-        rotation: 0,
-        duration: 0.6,
-        ease: "back.out(2)",
-      }, delay + 0.5);
-    });
+            // Row 1 cards — stagger cascade
+            card1Refs.current.forEach((el, i) => {
+                if (!el) return;
+                gsap.fromTo(el,
+                    { y: 36, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out', delay: i * 0.1,
+                      scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' } }
+                );
+            });
 
-    const line = lineRef.current;
-    if (line) {
-      const lineLength = line.getTotalLength();
-      gsap.set(line, { 
-        strokeDasharray: lineLength, 
-        strokeDashoffset: lineLength,
-        filter: "drop-shadow(0 0 8px rgba(59, 130, 246, 0.8))"
-      });
+            // Row 1 arrows — draw after card appears
+            ha1Refs.current.forEach((el, i) => {
+                if (!el) return;
+                gsap.fromTo(el,
+                    { scaleX: 0, opacity: 0 },
+                    { scaleX: 1, opacity: 1, duration: 0.35, ease: 'power2.out',
+                      delay: (i + 1) * 0.1 + 0.15,
+                      transformOrigin: 'left center',
+                      scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' } }
+                );
+            });
 
-      masterTl.to(line, {
-        strokeDashoffset: 0,
-        duration: 2,
-        ease: "power2.inOut",
-      }, "-=1")
-      .to(line, {
-        filter: "drop-shadow(0 0 15px rgba(59, 130, 246, 1))",
-        duration: 0.5,
-        yoyo: true,
-        repeat: 3,
-      }, "-=0.5");
-    }
+            // Vertical arrow
+            if (vaRef.current) {
+                gsap.fromTo(vaRef.current,
+                    { scaleY: 0, opacity: 0 },
+                    { scaleY: 1, opacity: 1, duration: 0.4, ease: 'power2.out',
+                      delay: 0.45,
+                      transformOrigin: 'top center',
+                      scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' } }
+                );
+            }
 
-    stepRefs.current.forEach((step, index) => {
-      const number = step.querySelector('.step-number');
-      const card = step.querySelector('.step-card');
-      const icon = step.querySelector('.step-icon-container');
-      const demo = step.querySelector('.demo-text');
-      const glow = step.querySelector('.glow-effect');
+            // Row 2 cards
+            card2Refs.current.forEach((el, i) => {
+                if (!el) return;
+                gsap.fromTo(el,
+                    { y: 36, opacity: 0 },
+                    { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out', delay: i * 0.1,
+                      scrollTrigger: { trigger: sectionRef.current, start: 'top 60%' } }
+                );
+            });
 
-      const hoverTl = gsap.timeline({ paused: true });
-      
-      hoverTl.to([card, number], {
-        scale: 1.05,
-        duration: 0.4,
-        ease: "power2.out",
-      })
-      .to(number, {
-        boxShadow: `0 0 40px var(--tw-red-500)`,
-        duration: 0.3,
-      }, "<")
-      .to(icon, {
-        y: -10,
-        duration: 0.6,
-        ease: "back.out(2)",
-      }, "<")
-      .to(glow, {
-        opacity: 1,
-        scale: 1.2,
-        duration: 0.4,
-      }, "<")
-      .fromTo(demo, {
-        opacity: 0,
-        y: 10,
-      }, {
-        opacity: 1,
-        y: 0,
-        duration: 0.3,
-      }, "<0.2");
+            // Row 2 arrows
+            ha2Refs.current.forEach((el, i) => {
+                if (!el) return;
+                gsap.fromTo(el,
+                    { scaleX: 0, opacity: 0 },
+                    { scaleX: 1, opacity: 1, duration: 0.35, ease: 'power2.out',
+                      delay: (i + 1) * 0.1 + 0.15,
+                      transformOrigin: 'left center',
+                      scrollTrigger: { trigger: sectionRef.current, start: 'top 60%' } }
+                );
+            });
 
-      step.addEventListener('mousemove', (e) => {
-        const rect = step.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        
-        gsap.to(number, {
-          x: x * 0.1,
-          y: y * 0.1,
-          duration: 0.3,
-        });
-      });
+        }, sectionRef);
 
-      step.addEventListener('mouseenter', () => {
-        hoverTl.play();
-      });
-      
-      step.addEventListener('mouseleave', () => {
-        hoverTl.reverse();
-        gsap.to(number, { x: 0, y: 0, duration: 0.5 });
-      });
+        return () => ctx.revert();
+    }, []);
 
-      step.addEventListener('click', animateDataFlow);
-    });
+    // Row 2 display order is 8 → 7 → 6 → 5 (right to left in the image)
+    const row2 = [...steps.slice(4)].reverse();
 
-    return () => {
-      ScrollTrigger.getAll().forEach(t => t.kill());
-    };
-  }, []);
+    return (
+        <section ref={sectionRef} className="w-full bg-white py-16 sm:py-20 lg:py-24 px-4 sm:px-6">
+            <div className="max-w-6xl mx-auto">
 
-  return (
-    <section ref={sectionRef} id="how-it-works" className="py-32 bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white overflow-hidden relative">
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute bg-gradient-to-r from-red-500/0 via-red-500/30 to-red-500/0 animate-line-flow"
-              style={{
-                height: '2px',
-                width: `${30 + Math.random() * 50}%`,
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 10}s`,
-                transform: `rotate(${Math.random() * 360}deg)`,
-              }}
-            ></div>
-          ))}
-        </div>
-        <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-pink-600/15 rounded-full blur-3xl animate-pulse-slow -translate-x-1/2 -translate-y-1/2"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-red-500/15 rounded-xl blur-3xl animate-pulse-slow delay-1500"></div>
-      </div>
+                {/* Heading */}
+                <h2
+                    ref={headingRef}
+                    className="text-center text-3xl sm:text-4xl lg:text-[2.75rem] font-bold text-gray-900 mb-14 lg:mb-20 leading-tight"
+                    style={{ opacity: 0, fontFamily: "'Georgia', serif" }}
+                >
+                    This is how Simpli<span className="text-blue-500">Find</span> works
+                </h2>
 
-      <style jsx>{`
-        @keyframes line-flow {
-          0% {
-            transform: translateX(-100%) rotate(var(--rotation, 0deg));
-            opacity: 0;
-          }
-          50% {
-            transform: translateX(100%) rotate(var(--rotation, 0deg));
-            opacity: 0.2;
-          }
-          100% {
-            transform: translateX(200%) rotate(var(--rotation, 0deg));
-            opacity: 0;
-          }
-        }
-        @keyframes pulse-slow {
-          0%, 100% {
-            transform: scale(1) translate(-50%, -50%);
-            opacity: 0.2;
-          }
-          50% {
-            transform: scale(1.1) translate(-50%, -50%);
-            opacity: 0.4;
-          }
-        }
-        .animate-line-flow {
-          animation: line-flow 15s infinite ease-in-out;
-          --rotation: 0deg; 
-        }
-        .animate-pulse-slow {
-          animation: pulse-slow 8s infinite ease-in-out;
-        }
-      `}</style>
+                {/* ── DESKTOP (lg+) ─────────────────────────────────────────── */}
+                <div className="hidden lg:block">
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center mb-20">
-          <h2 ref={titleRef} className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-red-400 via-pink-500 to-red-600 bg-clip-text text-transparent relative">
-            How It Works
-            <div className="absolute inset-0 bg-gradient-to-r from-red-400 via-pink-500 to-red-600 bg-clip-text text-transparent blur-sm opacity-50"></div>
-          </h2>
-          <p className="text-xl text-gray-400 max-w-4xl mx-auto leading-relaxed">
-            Experience the future of comment discovery with our AI-powered platform. 
-            Three simple steps to unlock insights from millions of YouTube comments.
-          </p>
-        </div>
+                    {/*
+                      Layout strategy:
+                      Each row uses CSS grid with explicit columns:
+                        [card] [arrow-gap] [card] [arrow-gap] [card] [arrow-gap] [card]
+                      Arrow gap columns are fixed width (64px) so arrows don't squish.
+                      Cards get equal 1fr each.
+                      Arrows are positioned to vertically center on the IMAGE area
+                      (badge + card center), not the whole card+caption cell.
+                    */}
 
-        <div className="relative">
-          <svg className="hidden lg:block absolute top-[120px] left-0 right-0 w-full h-auto z-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100">
-            <defs>
-              <linearGradient id="flow-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" style={{stopColor:"#EF4444"}} />
-                <stop offset="50%" style={{stopColor:"#F97316"}} />
-                <stop offset="100%" style={{stopColor:"#EC4899"}} />
-              </linearGradient>
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-                <feMerge>
-                  <feMergeNode in="coloredBlur"/>
-                  <feMergeNode in="SourceGraphic"/>
-                </feMerge>
-              </filter>
-            </defs>
-            <path
-              ref={lineRef}
-              d="M 150 50 Q 300 30 450 50 Q 600 70 850 50"
-              stroke="url(#flow-gradient)"
-              strokeWidth="3"
-              fill="none"
-              filter="url(#glow)"
-            />
-            <g className="animate-pulse">
-              <path d="M 400 45 L 410 50 L 400 55 L 405 50 Z" fill="#F97316" />
-              <path d="M 600 55 L 610 50 L 600 45 L 605 50 Z" fill="#EC4899" />
-            </g>
-          </svg>
+                    {/* ROW 1 — steps 1 → 4, arrows pointing right */}
+                    <div
+                        className="grid items-start mb-0"
+                        style={{ gridTemplateColumns: '1fr 64px 1fr 64px 1fr 64px 1fr' }}
+                    >
+                        {steps.slice(0, 4).map((step, i) => (
+                            <React.Fragment key={step.id}>
+                                {/* Card cell */}
+                                <div
+                                    ref={el => (card1Refs.current[i] = el)}
+                                    className="flex flex-col items-center"
+                                    style={{ opacity: 0 }}
+                                >
+                                    <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm mb-3 shadow-md shadow-blue-200">
+                                        {step.id}
+                                    </div>
+                                    <div className="w-40 h-40 rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden flex items-center justify-center p-2.5 hover:shadow-md transition-shadow duration-300">
+                                        <img src={step.image} alt={`Step ${step.id}`} className="w-full h-full object-contain" draggable={false} />
+                                    </div>
+                                    <p className="mt-3 text-center text-xs text-gray-500 leading-snug max-w-[9rem]">{step.caption}</p>
+                                </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-20 lg:gap-12">
-            {steps.map((step, index) => (
-              <div 
-                key={index} 
-                ref={addToRefs} 
-                className="relative flex flex-col items-center text-center group cursor-pointer transform-gpu"
-              >
-                <div className="glow-effect absolute inset-0 bg-gradient-to-br opacity-0 blur-xl rounded-3xl transform scale-75 transition-all duration-500"
-                  style={{background: `linear-gradient(135deg, ${step.accent.replace('-500', '-600')}, transparent)`}}>
-                </div>
-
-                <div className="relative mb-10">
-                  <div className={`step-number inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br ${step.color} rounded-2xl text-white font-black text-3xl relative z-10 shadow-2xl border border-white/20`}>
-                    {step.number}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${step.color} rounded-2xl blur opacity-50`}></div>
-                  </div>
-                </div>
-                
-                <div className="step-card relative flex flex-col items-center p-8 bg-gradient-to-br from-gray-800/80 via-gray-800/60 to-gray-900/80 rounded-3xl border border-gray-700/50 backdrop-blur-sm shadow-2xl transition-all duration-500 hover:shadow-3xl group-hover:border-opacity-100 group-hover:border-red-500/50">
-                  
-                  <div className="step-icon-container mb-6 relative">
-                    <div className={`text-red-500 transition-all duration-300 relative z-10`}>
-                      {step.icon}
+                                {/* Arrow gap cell — only between cards (not after last) */}
+                                {i < 3 && (
+                                    <div
+                                        ref={el => (ha1Refs.current[i] = el)}
+                                        className="flex items-center"
+                                        style={{
+                                            opacity: 0,
+                                            // push arrow down to vertically center it on the card image
+                                            // badge(36) + mb-3(12) + half card(80) - half arrow height(10) = 118px
+                                            paddingTop: '118px',
+                                            height: '100%',
+                                        }}
+                                    >
+                                        <div style={{ width: '64px', height: '20px' }}>
+                                            <HArrowSVG />
+                                        </div>
+                                    </div>
+                                )}
+                            </React.Fragment>
+                        ))}
                     </div>
-                    <div className={`absolute inset-0 bg-red-500 blur-lg opacity-30 scale-150`}></div>
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold text-white mb-4 relative z-10">
-                    {step.title}
-                  </h3>
-                  
-                  <p className="text-gray-300 leading-relaxed max-w-sm mx-auto mb-4 relative z-10">
-                    {step.description}
-                  </p>
 
-                  <div className="demo-text opacity-0 mt-4 px-4 py-2 bg-gray-700/50 rounded-lg text-sm font-mono text-gray-300 border border-gray-600/50">
-                    {step.demo}
-                  </div>
+                    {/* VERTICAL ARROW — right side, connecting step 4 (right col) down to step 5 */}
+                    <div className="grid" style={{ gridTemplateColumns: '1fr 64px 1fr 64px 1fr 64px 1fr' }}>
+                        {/* empty cols 1-6 */}
+                        {[0,1,2,3,4,5].map(n => <div key={n} />)}
+                        {/* col 7 = rightmost card column → arrow goes here */}
+                        <div className="flex justify-center" style={{ height: '64px' }}>
+                            <div
+                                ref={el => (vaRef.current = el)}
+                                style={{ opacity: 0, width: '20px', height: '64px' }}
+                            >
+                                <VArrowSVG />
+                            </div>
+                        </div>
+                    </div>
 
-                  <div className="absolute inset-0 rounded-3xl overflow-hidden">
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-gradient-to-r from-transparent via-white to-transparent transform -skew-x-12 translate-x-full group-hover:translate-x-[-200%] transition-all duration-1000"></div>
-                  </div>
+                    {/* ROW 2 — steps 8 → 5, arrows pointing left (flip) */}
+                    <div
+                        className="grid items-start"
+                        style={{ gridTemplateColumns: '1fr 64px 1fr 64px 1fr 64px 1fr' }}
+                    >
+                        {row2.map((step, i) => (
+                            <React.Fragment key={step.id}>
+                                <div
+                                    ref={el => (card2Refs.current[i] = el)}
+                                    className="flex flex-col items-center"
+                                    style={{ opacity: 0 }}
+                                >
+                                    <div className="w-9 h-9 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-sm mb-3 shadow-md shadow-blue-200">
+                                        {step.id}
+                                    </div>
+                                    <div className="w-40 h-40 rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden flex items-center justify-center p-2.5 hover:shadow-md transition-shadow duration-300">
+                                        <img src={step.image} alt={`Step ${step.id}`} className="w-full h-full object-contain" draggable={false} />
+                                    </div>
+                                    <p className="mt-3 text-center text-xs text-gray-500 leading-snug max-w-[9rem]">{step.caption}</p>
+                                </div>
+
+                                {i < 3 && (
+                                    <div
+                                        ref={el => (ha2Refs.current[i] = el)}
+                                        className="flex items-center"
+                                        style={{
+                                            opacity: 0,
+                                            paddingTop: '118px',
+                                            height: '100%',
+                                        }}
+                                    >
+                                        {/* flip=true so arrow points LEFT (← snake direction) */}
+                                        <div style={{ width: '64px', height: '20px' }}>
+                                            <HArrowSVG flip={true} />
+                                        </div>
+                                    </div>
+                                )}
+                            </React.Fragment>
+                        ))}
+                    </div>
                 </div>
 
-                {index < steps.length - 1 && (
-                  <div className="hidden lg:block absolute -right-6 top-1/2 transform -translate-y-1/2 z-20">
-                    <ArrowRight className="w-6 h-6 text-gray-500 animate-pulse" />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+                {/* ── MOBILE / TABLET (< lg) ────────────────────────────────── */}
+                <div className="lg:hidden grid grid-cols-2 gap-x-6 gap-y-10 place-items-center">
+                    {steps.map((step, i) => (
+                        <div
+                            key={step.id}
+                            className="flex flex-col items-center"
+                            style={{ opacity: 0, transform: 'translateY(28px)' }}
+                            ref={el => {
+                                if (!el) return;
+                                ScrollTrigger.create({
+                                    trigger: el,
+                                    start: 'top 92%',
+                                    once: true,
+                                    onEnter: () =>
+                                        gsap.to(el, {
+                                            opacity: 1, y: 0,
+                                            duration: 0.5, ease: 'power3.out',
+                                            delay: (i % 2) * 0.1,
+                                        }),
+                                });
+                            }}
+                        >
+                            <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-xs mb-2.5 shadow-md shadow-blue-200">
+                                {step.id}
+                            </div>
+                            <div className="w-32 h-32 sm:w-36 sm:h-36 rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden flex items-center justify-center p-2">
+                                <img src={step.image} alt={`Step ${step.id}`} className="w-full h-full object-contain" draggable={false} />
+                            </div>
+                            <p className="mt-2.5 text-center text-[0.65rem] sm:text-xs text-gray-500 leading-snug max-w-[8rem]">
+                                {step.caption}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+
+            </div>
+        </section>
+    );
 };
 
-export default HowItWorksSection;
+export default HowItWorks;

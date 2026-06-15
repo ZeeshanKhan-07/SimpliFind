@@ -1,144 +1,224 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { FaYoutube, FaBrain, FaFilter, FaBolt, FaChartLine, FaFileExport } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// ── Feature data ──────────────────────────────────────────────────────────────
 const features = [
-  {
-    icon: <FaYoutube />,
-    title: "Seamless Video Integration",
-    description: "Effortlessly fetch and securely store thousands of comments from any YouTube video URL with a single click.",
-    color: "from-red-500 to-rose-500",
-  },
-  {
-    icon: <FaBrain />,
-    title: "AI Semantic Search",
-    description: "Go beyond keywords. Our machine learning models understand meaning and context to find comments with identical intent.",
-    color: "from-purple-500 to-indigo-500",
-  },
-  {
-    icon: <FaFilter />,
-    title: "Advanced Smart Filtering",
-    description: "Drill down into data with powerful filters by sentiment, date, and relevance to pinpoint exactly what you're looking for.",
-    color: "from-green-500 to-emerald-500",
-  },
-  {
-    icon: <FaBolt />,
-    title: "Real-Time Speed & Scale",
-    description: "Experience lightning-fast search results, with our optimized infrastructure designed to handle vast amounts of data in milliseconds.",
-    color: "from-yellow-500 to-orange-500",
-  },
+    {
+        id: 1,
+        title: 'SMART SEARCH',
+        description:
+            'Paste any YouTube video URL and describe the type of comment youre looking for. Our AI instantly surfaces the most relevant results.',
+        // SVG: magnifying glass
+        icon: (
+            <svg viewBox="0 0 48 48" fill="none" className="w-9 h-9" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="21" cy="21" r="13" />
+                <line x1="31" y1="31" x2="43" y2="43" />
+            </svg>
+        ),
+    },
+    {
+        id: 2,
+        title: 'INSTANT RESULTS',
+        description:
+            'No more endless scrolling. Find thousands of related comments in seconds, ranked by relevance so the best ones surface first.',
+        // SVG: lightning bolt
+        icon: (
+            <svg viewBox="0 0 48 48" fill="none" className="w-9 h-9" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="28,6 14,26 24,26 20,42 34,22 24,22 28,6" />
+            </svg>
+        ),
+    },
+    {
+        id: 3,
+        title: 'AI ASSISTANT',
+        description:
+            'Have a question about a comment? Our built-in AI assistant can explain context, provide insights, and answer anything youre curious about.',
+        // SVG: chat bubble with sparkle
+        icon: (
+            <svg viewBox="0 0 48 48" fill="none" className="w-9 h-9" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 8h32a2 2 0 012 2v20a2 2 0 01-2 2H16l-8 8V10a2 2 0 012-2z" />
+                <line x1="17" y1="20" x2="31" y2="20" />
+                <line x1="17" y1="26" x2="25" y2="26" />
+            </svg>
+        ),
+    },
+    {
+        id: 4,
+        title: 'TIME SAVER',
+        description:
+            'Save hours youd otherwise spend manually reading through comment sections. SimpliFind does the heavy lifting so you can focus on what matters.',
+        // SVG: clock
+        icon: (
+            <svg viewBox="0 0 48 48" fill="none" className="w-9 h-9" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="24" cy="24" r="17" />
+                <polyline points="24,13 24,24 32,30" />
+            </svg>
+        ),
+    },
 ];
 
-const AsymmetricalFeatures = () => {
-  const sectionRef = useRef(null);
-  const titleRef = useRef(null);
-  const cardsRef = useRef([]);
+// ── Card component ────────────────────────────────────────────────────────────
+// Alternates: odd cards (1,3) = blue bg, even cards (2,4) = white bg
+// Matches the image's alternating pattern exactly
+const FeatureCard = ({ feature, index, cardRef }) => {
+    const isBlue = index % 2 === 0; // 0-indexed: 0,2 → blue; 1,3 → white
 
-  useEffect(() => {
-    gsap.fromTo([titleRef.current, titleRef.current.nextElementSibling], {
-      opacity: 0,
-      y: 50,
-    }, {
-      opacity: 1,
-      y: 0,
-      duration: 1.2,
-      stagger: 0.3,
-      ease: "power3.out",
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: "top 80%",
-        toggleActions: "play none none reverse",
-      }
-    });
-
-    cardsRef.current.forEach((card, index) => {
-      const isEven = index % 2 === 0;
-      gsap.fromTo(card, {
-        opacity: 0,
-        y: isEven ? 100 : 50,
-      }, {
-        opacity: 1,
-        y: 0,
-        duration: 1.5,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: card,
-          start: "top 85%",
-          toggleActions: "play none none reverse",
-        }
-      });
-    });
-
-    cardsRef.current.forEach(card => {
-      const gradient = card.querySelector('.gradient-border');
-      gsap.set(gradient, {
-        width: '0%',
-        height: '0%',
-        top: '50%',
-        left: '50%',
-      });
-
-      const hoverTimeline = gsap.timeline({ paused: true });
-      hoverTimeline.to(gradient, {
-        width: '100%',
-        height: '100%',
-        top: '0%',
-        left: '0%',
-        duration: 0.4,
-        ease: 'power2.out'
-      }).to(card, {
-        y: -10,
-        scale: 1.05,
-        duration: 0.4,
-        ease: 'power2.out',
-      }, "<");
-
-      card.addEventListener('mouseenter', () => hoverTimeline.play());
-      card.addEventListener('mouseleave', () => hoverTimeline.reverse());
-    });
-  }, []);
-
-  return (
-    <section ref={sectionRef} id="features-asymmetrical" className="py-24 bg-gray-950 text-white overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 ref={titleRef} className="text-4xl md:text-5xl font-extrabold mb-4 bg-gradient-to-r from-gray-100 to-gray-400 bg-clip-text text-transparent">
-            Your Journey to Insightful Data
-          </h2>
-          <p className="text-xl text-gray-500 max-w-3xl mx-auto">
-            Experience a new level of discovery with our advanced, AI-powered toolkit.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
+    return (
+        <div
+            ref={cardRef}
+            style={{ opacity: 0, transform: 'translateY(40px)' }}
+            className={`
+                relative flex flex-col items-center text-center
+                rounded-2xl px-7 py-10
+                transition-all duration-300
+                hover:-translate-y-2 hover:shadow-xl
+                cursor-default
+                ${isBlue
+                    ? 'bg-blue-500 text-white shadow-lg shadow-blue-200'
+                    : 'bg-white text-gray-800 shadow-md border border-gray-100'}
+            `}
+        >
+            {/* Icon circle */}
             <div
-              key={index}
-              ref={el => (cardsRef.current[index] = el)}
-              className={`relative p-8 rounded-3xl bg-gray-800/50 hover:bg-gray-800/70 shadow-xl transition-colors duration-300 transform-gpu cursor-pointer
-                ${index % 3 === 0 ? 'lg:col-span-2' : ''}
-                ${index % 2 !== 0 ? 'md:mt-16' : ''}
-              `}
+                className={`
+                    w-16 h-16 rounded-full flex items-center justify-center mb-6 flex-shrink-0
+                    ${isBlue
+                        ? 'bg-white/20 text-white'
+                        : 'bg-blue-50 text-blue-500'}
+                `}
             >
-              {/* Animated gradient border */}
-              <div className={`gradient-border absolute rounded-3xl z-0 inset-0 ${feature.color} opacity-30`}></div>
-              
-              <div className="relative z-10">
-                <div className={`p-4 rounded-full inline-block bg-black/40 mb-6 transition-transform duration-300`}>
-                  <span className="w-10 h-10 text-white">{feature.icon}</span>
-                </div>
-                <h3 className="text-3xl font-bold mb-3">{feature.title}</h3>
-                <p className="text-gray-400 leading-relaxed text-lg">{feature.description}</p>
-              </div>
+                {feature.icon}
             </div>
-          ))}
+
+            {/* Title */}
+            <h3
+                className={`
+                    text-sm font-bold tracking-widest mb-4 uppercase
+                    ${isBlue ? 'text-white' : 'text-blue-500'}
+                `}
+            >
+                {feature.title}
+            </h3>
+
+            {/* Description */}
+            <p
+                className={`
+                    text-sm leading-relaxed mb-8 flex-1
+                    ${isBlue ? 'text-blue-100' : 'text-gray-500'}
+                `}
+            >
+                {feature.description}
+            </p>
+
+            {/* "MORE" link */}
+            <span
+                className={`
+                    text-xs font-bold tracking-widest uppercase
+                    border-b-2 pb-0.5
+                    ${isBlue
+                        ? 'text-white border-white/60 hover:border-white'
+                        : 'text-blue-500 border-blue-300 hover:border-blue-500'}
+                    transition-colors duration-200 cursor-pointer
+                `}
+            >
+                MORE
+            </span>
         </div>
-      </div>
-    </section>
-  );
+    );
 };
 
-export default AsymmetricalFeatures;
+// ── Section ───────────────────────────────────────────────────────────────────
+const FeaturesSection = () => {
+    const sectionRef  = useRef(null);
+    const headingRef  = useRef(null);
+    const cardRefs    = useRef([]);
+
+    useEffect(() => {
+        const ctx = gsap.context(() => {
+
+            // Heading
+            gsap.fromTo(
+                headingRef.current,
+                { y: 28, opacity: 0 },
+                {
+                    y: 0, opacity: 1,
+                    duration: 0.65,
+                    ease: 'power3.out',
+                    scrollTrigger: {
+                        trigger: headingRef.current,
+                        start: 'top 86%',
+                        once: true,
+                    },
+                }
+            );
+
+            // Cards stagger in
+            cardRefs.current.forEach((el, i) => {
+                if (!el) return;
+                gsap.fromTo(
+                    el,
+                    { y: 48, opacity: 0 },
+                    {
+                        y: 0, opacity: 1,
+                        duration: 0.55,
+                        ease: 'power3.out',
+                        delay: i * 0.1,
+                        scrollTrigger: {
+                            trigger: sectionRef.current,
+                            start: 'top 72%',
+                            once: true,
+                        },
+                    }
+                );
+            });
+
+        }, sectionRef);
+
+        return () => ctx.revert();
+    }, []);
+
+    return (
+        <section
+            ref={sectionRef}
+            id="features"
+            className="w-full py-16 sm:py-20 lg:py-24 px-4 sm:px-8 bg-white"
+        >
+            <div className="max-w-6xl mx-auto">
+
+                {/* Heading */}
+                <div ref={headingRef} className="text-center mb-12 lg:mb-16" style={{ opacity: 0 }}>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-blue-500 mb-3">
+                        What we offer
+                    </p>
+                    <h2
+                        className="text-3xl sm:text-4xl lg:text-[2.6rem] font-bold text-gray-900 leading-tight"
+                        style={{ fontFamily: "'Georgia', serif" }}
+                    >
+                        Everything you need to find
+                        <br className="hidden sm:block" />
+                        <span className="text-blue-500"> what matters</span>
+                    </h2>
+                </div>
+
+                {/* Cards grid — 1 col mobile, 2 col tablet, 4 col desktop */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6">
+                    {features.map((feature, i) => (
+                        <FeatureCard
+                            key={feature.id}
+                            feature={feature}
+                            index={i}
+                            cardRef={el => (cardRefs.current[i] = el)}
+                        />
+                    ))}
+                </div>
+
+            </div>
+        </section>
+    );
+};
+
+export default FeaturesSection;
