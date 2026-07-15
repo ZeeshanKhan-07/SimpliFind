@@ -14,13 +14,14 @@ import HowItWorksSection from "./components/HowItWorksSection";
 import Footer from "./components/Footer";
 import AskAiPage from "./pages/AskAiPage";
 
-import SignIn from "./components/Login/SignIn";
-import SignUp from "./components/Login/SignUp";
 import AuthService from "./services/AuthService";
 import ProfilePage from "./pages/ProfilePage";
 import { Toaster } from "react-hot-toast";
 import LoginPage from "./components/Login/LoginPage";
 import About from "./components/About";
+import FindComments from "./pages/FindComments";
+import VerifyOtpPage from "./pages/VerifyOtpPage";
+import SignupPage from "./pages/SignUpPage";
 
 const App = () => {
   return (
@@ -66,7 +67,10 @@ const App = () => {
 
         <Route path="/login" element={<LoginPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/find-comments" element={<FindComments />}/>
         <Route path="/ask-ai" element={<AskAiPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/verify-otp" element={<VerifyOtpPage />} />
       </Routes>
     </>
   );

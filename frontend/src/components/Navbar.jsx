@@ -133,13 +133,13 @@ const Navbar = () => {
                                 <>
                                     <button
                                         onClick={() => navigate('/login')}
-                                        className="text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors duration-200"
+                                        className="text-sm font-medium text-gray-700 cursor-pointer hover:text-gray-900 transition-colors duration-200"
                                     >
                                         Login
                                     </button>
                                     <button
                                         onClick={() => navigate('/signup')}
-                                        className="text-sm font-semibold text-white bg-blue-500 hover:bg-blue-600 px-5 py-2 rounded-full transition-all duration-200 shadow-sm hover:shadow-md"
+                                        className="text-sm font-semibold cursor-pointer text-white bg-blue-500 hover:bg-blue-600 px-5 py-2 rounded-full transition-all duration-200 shadow-sm hover:shadow-md"
                                     >
                                         SignUp
                                     </button>

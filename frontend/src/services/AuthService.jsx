@@ -42,6 +42,15 @@ class AuthService {
         }
     }
 
+    async verifyOtp(email, verificationCode) {
+        try {
+            const response = await this.api.post('/verify', { email, verificationCode });
+            return response.data;
+        } catch (error) {
+            throw this._handleError(error, 'OTP Verification failed');
+        }
+    }
+
     /**
      * POST /login
      * Returns the full response: { accessToken, refreshToken, expiresIn, tokenType, user }
