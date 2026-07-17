@@ -4,43 +4,43 @@ SimpliFind is the smart way to save time. Instead of scrolling through thousands
 
 ## Application Preview
 
-###Landing Page 
+### Landing Page 
 <img width="960" height="540" alt="Screenshot 2026-07-17 163921" src="https://github.com/user-attachments/assets/10db699a-292c-45ce-995b-b105f667b1b0" />
 
 ### Why SimpliFind?
 <img width="960" height="540" alt="Screenshot 2026-07-17 163955" src="https://github.com/user-attachments/assets/7712a35d-019b-4256-bcf4-6894b3e1469e" />
 
-###How It Works.
+### How It Works.
 <img width="960" height="540" alt="Screenshot 2026-07-17 164018" src="https://github.com/user-attachments/assets/ab2c867f-fc1c-41a6-a2d8-98974de2b808" />
 
-###Features 
+### Features 
 <img width="960" height="540" alt="Screenshot 2026-07-17 164029" src="https://github.com/user-attachments/assets/a012bf25-994a-4c94-a73f-71af9f9611a3" />
 
-###Reviews
+### Reviews
 <img width="960" height="540" alt="Screenshot 2026-07-17 164041" src="https://github.com/user-attachments/assets/2df7381c-be06-41ad-bf9b-e2a939ec777f" />
 
-###Footer
+### Footer
 <img width="960" height="540" alt="Screenshot 2026-07-17 164049" src="https://github.com/user-attachments/assets/d903f27e-caa2-4448-8536-bacec392942f" />
 
-###Login Page
+### Login Page
 <img width="960" height="540" alt="Screenshot 2026-07-17 164343" src="https://github.com/user-attachments/assets/1e462693-b28a-4344-a14f-7b75e268e71f" />
 
-###Signup Page
+### Signup Page
 <img width="960" height="540" alt="Screenshot 2026-07-17 164324" src="https://github.com/user-attachments/assets/b34330e0-b04c-4383-9e61-424aef2bb1d7" />
 
-###OTP Verification Page
+### OTP Verification Page
 <img width="960" height="540" alt="Screenshot 2026-07-17 165138" src="https://github.com/user-attachments/assets/c258ccf8-bed3-4a83-8eb3-6e06dd0d1a03" />
 
-###Find Comments
+### Find Comments
 <img width="960" height="540" alt="Screenshot 2026-07-17 170156" src="https://github.com/user-attachments/assets/acad519d-8582-4547-9ffb-3127061e8cb9" />
 <img width="960" height="540" alt="Screenshot 2026-07-17 170223" src="https://github.com/user-attachments/assets/2cad1e0d-49b9-4ee8-94bd-98130b9a0352" />
 <img width="960" height="540" alt="Screenshot 2026-07-17 170234" src="https://github.com/user-attachments/assets/ae710bd1-37c5-4bbf-9a6b-8ec9f7a87087" />
 
-###ASK AI Page
+### ASK AI Page
 <img width="960" height="540" alt="Screenshot 2026-07-17 170300" src="https://github.com/user-attachments/assets/87de2024-d58e-48cc-ba51-9859404267b5" />
 <img width="960" height="540" alt="Screenshot 2026-07-17 170315" src="https://github.com/user-attachments/assets/906b966b-4eda-4689-81c9-8262d8c6f881" />
 
-###User Profile Page
+### User Profile Page
 <img width="960" height="540" alt="Screenshot 2026-07-17 170330" src="https://github.com/user-attachments/assets/e0f0d2b6-8da1-451b-8242-7537c5abbb26" />
 <img width="960" height="540" alt="Screenshot 2026-07-17 181738" src="https://github.com/user-attachments/assets/b9426ac3-eac2-4c95-a0a6-9c2880dca4f5" />
 
