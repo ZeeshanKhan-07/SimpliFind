@@ -1,0 +1,15 @@
+package com.youtube.SearchSimilarComment.repository;
+
+import com.youtube.SearchSimilarComment.entity.SearchHistory;
+import com.youtube.SearchSimilarComment.entity.User;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.UUID;
+
+@Repository
+public interface SearchHistoryRepository extends JpaRepository<SearchHistory, UUID> {
+    List<SearchHistory> findByUserOrderByDateDesc(User user);
+}

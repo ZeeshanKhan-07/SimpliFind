@@ -68,7 +68,7 @@ function SearchResultsModal({ comments, isOpen, onClose }) {
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full px-4 py-3 pl-12 bg-white/5 border border-white/10 rounded-xl text-black placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm"
+                            className="w-full px-4 py-3 pl-12 bg-white/5 border border-gray-500 rounded-xl text-black placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-sm"
                             placeholder="Filter found results..."
                         />
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />

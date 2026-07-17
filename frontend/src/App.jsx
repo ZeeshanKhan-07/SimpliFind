@@ -22,6 +22,8 @@ import About from "./components/About";
 import FindComments from "./pages/FindComments";
 import VerifyOtpPage from "./pages/VerifyOtpPage";
 import SignupPage from "./pages/SignUpPage";
+import { Reviews } from "./components/Reviews";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 const App = () => {
   return (
@@ -60,6 +62,7 @@ const App = () => {
               <About />
               <HowItWorksSection />
               <FeaturesSection />
+              <Reviews />
               <Footer />
             </>
           }

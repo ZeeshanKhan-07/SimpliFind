@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import AuthService from "../services/AuthService"; // adjust path as needed
+import AuthService from "../services/AuthService";
 
 const LOCAL_KEY = "application_state";
 
@@ -62,7 +62,6 @@ const Useauth = create(
     }),
     {
       name: LOCAL_KEY,
-      // Only persist these keys — keeps storage lean
       partialize: (state) => ({
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,

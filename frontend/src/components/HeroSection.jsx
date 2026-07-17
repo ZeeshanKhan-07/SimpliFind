@@ -79,6 +79,7 @@ const HeroSection = () => {
               Added overflow-hidden so nothing bleeds out.
             */}
             <section
+                id="home"
                 ref={sectionRef}
                 className="flex items-center justify-center bg-white overflow-hidden"
                 style={{ minHeight: 'calc(100vh - 56px)', paddingTop: '56px' }}

@@ -38,8 +38,8 @@ const TwitterIcon = () => (
 );
 
 const SOCIALS = [
-    { label: 'GitHub',   icon: <GithubIcon />,   href: 'https://github.com' },
-    { label: 'LinkedIn', icon: <LinkedinIcon />,  href: 'https://linkedin.com' },
+    { label: 'GitHub',   icon: <GithubIcon />,   href: 'https://github.com/ZeeshanKhan-07' },
+    { label: 'LinkedIn', icon: <LinkedinIcon />,  href: 'https://www.linkedin.com/in/zeeshan-dev07/' },
     { label: 'Twitter',  icon: <TwitterIcon />,   href: 'https://twitter.com' },
 ];
 
@@ -232,14 +232,12 @@ const Footer = () => {
                     </div>
                 </div>
 
-                {/* ── Divider ─────────────────────────────────────────────────── */}
                 <div
                     ref={dividerRef}
                     className="w-full h-px bg-gray-200 mb-6"
                     style={{ opacity: 0, transformOrigin: 'left center' }}
                 />
 
-                {/* ── Bottom bar ───────────────────────────────────────────────── */}
                 <div
                     ref={bottomRef}
                     className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-gray-400"

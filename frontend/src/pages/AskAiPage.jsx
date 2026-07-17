@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { TiArrowUpThick } from "react-icons/ti";
-import { ArrowLeft, Trash2, Copy, Check, Paperclip, Mic, Smile, Settings, Users, Sun, Moon, Send } from 'lucide-react';
-import { IoChatbubbleEllipsesSharp } from "react-icons/io5";
+import { Copy, Check } from 'lucide-react';
 import logo from '../images/logo.gif';
+import chatService from '../services/chatService';
 
 const ChatApp = ({ initialMessage, onBack }) => {
   const [messages, setMessages] = useState([
@@ -28,29 +28,29 @@ const ChatApp = ({ initialMessage, onBack }) => {
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js';
     script.onload = () => {
       const { gsap } = window;
-      
+
       const tl = gsap.timeline();
-      
-      tl.fromTo(headerRef.current, 
-        { y: -50, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
+
+      tl.fromTo(headerRef.current,
+        { y: -30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.7, ease: "power3.out" }
       )
       .fromTo(messagesContainerRef.current,
-        { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6, ease: "power2.out" },
-        "-=0.4"
+        { y: 24, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" },
+        "-=0.35"
       )
       .fromTo(inputSectionRef.current,
-        { y: 50, opacity: 0, scale: 0.95 },
-        { y: 0, opacity: 1, scale: 1, duration: 0.7, ease: "back.out(1.2)" },
-        "-=0.3"
+        { y: 40, opacity: 0, scale: 0.97 },
+        { y: 0, opacity: 1, scale: 1, duration: 0.6, ease: "back.out(1.2)" },
+        "-=0.25"
       );
 
       const initialMessageEl = document.querySelector('[data-message-id="1"]');
       if (initialMessageEl) {
         gsap.fromTo(initialMessageEl,
           { x: -30, opacity: 0, scale: 0.9 },
-          { x: 0, opacity: 1, scale: 1, duration: 0.5, ease: "power2.out", delay: 0.5 }
+          { x: 0, opacity: 1, scale: 1, duration: 0.5, ease: "power2.out", delay: 0.4 }
         );
       }
     };
@@ -67,7 +67,7 @@ const ChatApp = ({ initialMessage, onBack }) => {
     if (window.gsap && messages.length > 1) {
       const lastMessage = messages[messages.length - 1];
       const messageEl = document.querySelector(`[data-message-id="${lastMessage.id}"]`);
-      
+
       if (messageEl) {
         const { gsap } = window;
         if (lastMessage.sender === 'user') {
@@ -89,7 +89,7 @@ const ChatApp = ({ initialMessage, onBack }) => {
     if (window.gsap) {
       const { gsap } = window;
       const typingEl = document.querySelector('.typing-indicator');
-      
+
       if (isTyping && typingEl) {
         gsap.fromTo(typingEl,
           { x: -30, opacity: 0, scale: 0.9 },
@@ -156,18 +156,12 @@ const ChatApp = ({ initialMessage, onBack }) => {
     setIsTyping(true);
 
     try {
-      const response = await fetch('http://localhost:8080/api/chat/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: userMessage.text }),
-      });
-
-      const data = await response.json();
+      const answerText = await chatService.askQuestion(userMessage.text);
 
       setTimeout(() => {
         const aiMessage = {
           id: Date.now() + 1,
-          text: data.answer || data.error || 'Sorry, something went wrong.',
+          text: answerText || 'Sorry, something went wrong.',
           sender: 'ai',
           timestamp: new Date()
         };
@@ -179,7 +173,7 @@ const ChatApp = ({ initialMessage, onBack }) => {
       setTimeout(() => {
         const errorMessage = {
           id: Date.now() + 1,
-          text: 'Failed to connect to server. Please check if the backend is running on localhost:8080.',
+          text: error.message || 'Failed to connect to server. Please check if the backend is running on localhost:8080.',
           sender: 'ai',
           timestamp: new Date()
         };
@@ -200,44 +194,17 @@ const ChatApp = ({ initialMessage, onBack }) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const clearChat = () => {
-    if (window.gsap) {
-      const { gsap } = window;
-      gsap.to('.message-item', {
-        x: -100,
-        opacity: 0,
-        duration: 0.3,
-        stagger: 0.05,
-        onComplete: () => {
-          setMessages([{
-            id: 1,
-            text: "Hello! I'm your AI assistant. How can I help you today?",
-            sender: 'ai',
-            timestamp: new Date()
-          }]);
-        }
-      });
-    } else {
-      setMessages([{
-        id: 1,
-        text: "Hello! I'm your AI assistant. How can I help you today?",
-        sender: 'ai',
-        timestamp: new Date()
-      }]);
-    }
-  };
-
   const copyToClipboard = async (text, messageId) => {
     try {
       await navigator.clipboard.writeText(text);
       setCopiedMessageId(messageId);
-      
+
       if (window.gsap) {
         const { gsap } = window;
         const copyBtn = document.querySelector(`[data-copy-btn="${messageId}"]`);
         gsap.to(copyBtn, { scale: 1.2, duration: 0.1, yoyo: true, repeat: 1 });
       }
-      
+
       setTimeout(() => setCopiedMessageId(null), 2000);
     } catch (err) {
       console.error('Failed to copy text: ', err);
@@ -245,28 +212,30 @@ const ChatApp = ({ initialMessage, onBack }) => {
   };
 
   const TypingIndicator = () => (
-    <div className="typing-indicator flex items-center space-x-2 p-4 bg-[#2d2d2d] rounded-2xl max-w-xs shadow-sm">
+    <div className="typing-indicator flex items-center space-x-2 p-4 bg-blue-50 border border-blue-100 rounded-2xl max-w-xs shadow-sm">
       <div className="flex space-x-1">
-        <div className="w-2 h-2 bg-gray-600 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-        <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+        <div className="w-2 h-2 bg-blue-300 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+        <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+        <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
       </div>
-      <span className="text-xs text-gray-400 font-medium">Let me think...</span>
+      <span className="text-xs text-gray-500 font-medium">Let me think...</span>
     </div>
   );
 
   return (
-    <div className="h-screen bg-[#212121] flex flex-col overflow-hidden">
-      <div ref={headerRef} className="flex-shrink-0 flex flex-col items-center pt-8 pb-4">
-        <div className="w-16 h-16 bg-gradient-to-r rounded-2xl p-1 shadow-2xl hover:scale-105 transition-transform duration-300">
+    // pt-14/pt-16 reserves space for the fixed Navbar (h-14 sm:h-16) so content never sits under it
+    <div className="h-screen bg-white flex flex-col overflow-hidden pt-14 sm:pt-16">
+      <div ref={headerRef} className="flex-shrink-0 flex flex-col items-center pt-6 pb-3">
+        <div className="w-14 h-14 bg-blue-50 border-2 border-blue-100 rounded-2xl p-1 shadow-sm hover:scale-105 transition-transform duration-300">
           <img
             src={logo}
             alt="Logo"
             className="w-full h-full rounded-xl object-cover bg-white"
           />
         </div>
-        <h2 className="text-3xl font-bold text-white mt-6">How can i help you?</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mt-4">How can I help you?</h2>
       </div>
+
       <div className="flex-1 flex flex-col min-h-0 px-4 max-w-4xl mx-auto w-full">
         <div ref={messagesContainerRef} className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar pb-4">
           {messages.map((message) => (
@@ -277,7 +246,7 @@ const ChatApp = ({ initialMessage, onBack }) => {
             >
               <div className="flex items-end space-x-2 max-w-[85%] lg:max-w-2xl">
                 {message.sender === 'ai' && (
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-r flex items-center justify-center mb-1 hover:scale-110 transition-transform duration-200">
+                  <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mb-1 hover:scale-110 transition-transform duration-200">
                     <img
                       src={logo}
                       alt="Logo"
@@ -289,8 +258,8 @@ const ChatApp = ({ initialMessage, onBack }) => {
                 <div className="flex flex-col">
                   <div
                     className={`px-5 py-3 rounded-2xl shadow-sm relative hover:shadow-md transition-all duration-200 ${message.sender === 'user'
-                      ? 'bg-gradient-to-r bg-white text-black rounded-br-md hover:scale-[1.02]'
-                      : 'bg-[#2d2d2d] text-white rounded-bl-md border border-[#3d3d3d] hover:border-[#4d4d4d] hover:scale-[1.02]'
+                      ? 'bg-blue-500 text-white rounded-br-md hover:scale-[1.02]'
+                      : 'bg-blue-50 text-gray-900 rounded-bl-md border border-blue-100 hover:border-blue-200 hover:scale-[1.02]'
                       }`}
                   >
                     <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
@@ -298,20 +267,20 @@ const ChatApp = ({ initialMessage, onBack }) => {
                       <button
                         data-copy-btn={message.id}
                         onClick={() => copyToClipboard(message.text, message.id)}
-                        className="absolute top-1 right-0 opacity-0 group-hover:opacity-100 p-1 hover:bg-[#3d3d3d] rounded transition-all duration-200 hover:scale-110"
+                        className="absolute top-1 right-0 opacity-0 group-hover:opacity-100 p-1 hover:bg-blue-100 rounded transition-all duration-200 hover:scale-110"
                         title="Copy message"
                       >
                         {copiedMessageId === message.id ? (
-                          <Check size={14} className="text-green-500" />
+                          <Check size={14} className="text-green-600" />
                         ) : (
-                          <Copy size={14} className="text-gray-400" />
+                          <Copy size={14} className="text-blue-400" />
                         )}
                       </button>
                     )}
                   </div>
                   <p
                     className={`text-xs mt-1 px-2 ${message.sender === 'user'
-                      ? 'text-gray-500 text-right'
+                      ? 'text-gray-400 text-right'
                       : 'text-gray-400 text-left'
                       }`}
                   >
@@ -324,7 +293,7 @@ const ChatApp = ({ initialMessage, onBack }) => {
           {isTyping && (
             <div className="flex justify-start">
               <div className="flex items-end space-x-2">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r flex items-center justify-center mb-1">
+                <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mb-1">
                   <img
                     src={logo}
                     alt="Logo"
@@ -339,7 +308,7 @@ const ChatApp = ({ initialMessage, onBack }) => {
         </div>
 
         <div ref={inputSectionRef} className="flex-shrink-0 py-4">
-          <div className="w-full bg-[#2d2d2d] rounded-2xl shadow-lg border border-[#3d3d3d] p-4 hover:border-[#4d4d4d] transition-all duration-300">
+          <div className="w-full bg-white rounded-2xl shadow-lg shadow-blue-500/5 border-2 border-blue-500 p-4 transition-all duration-300">
             <div className="flex items-center space-x-3">
               <div className="flex-1 relative">
                 <textarea
@@ -348,7 +317,7 @@ const ChatApp = ({ initialMessage, onBack }) => {
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Ask anything..."
-                  className="w-full px-4 py-3 bg-[#1e1e1e] text-white rounded-xl border border-transparent focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none overflow-y-auto text-sm leading-relaxed custom-scrollbar hover:bg-[#252525]"
+                  className="w-full px-4 py-3 bg-white text-gray-800 rounded-xl border border-transparent focus:outline-none focus:ring-2 focus:ring-blue-200 transition-all duration-200 resize-none overflow-y-auto text-sm leading-relaxed custom-scrollbar placeholder-gray-400"
                   rows="1"
                   disabled={isTyping}
                   style={{ minHeight: '48px', maxHeight: '120px' }}
@@ -357,10 +326,10 @@ const ChatApp = ({ initialMessage, onBack }) => {
               <button
                 onClick={sendMessage}
                 disabled={!inputValue.trim() || isTyping}
-                className="send-button bg-white cursor-pointer text-black p-3 rounded-full transition-all duration-200 transform hover:scale-110 active:scale-95 disabled:scale-100 disabled:cursor-not-allowed shadow-lg hover:shadow-xl disabled:opacity-50"
+                className="send-button bg-[#0084FF] hover:bg-[#0074E0] cursor-pointer text-white p-3 rounded-full transition-all duration-200 transform hover:scale-110 active:scale-95 disabled:scale-100 disabled:cursor-not-allowed shadow-lg shadow-blue-500/20 disabled:opacity-50"
                 title={!inputValue.trim() ? 'Enter a message to send' : 'Send message (Enter)'}
               >
-                <TiArrowUpThick className="w-5 h-5 text-black" />
+                <TiArrowUpThick className="w-5 h-5 text-white" />
               </button>
             </div>
           </div>
@@ -373,7 +342,7 @@ const ChatApp = ({ initialMessage, onBack }) => {
             transform: translateY(0);
           }
           40% {
-            transform: translateY(-10px);
+            transform: translateY(-6px);
           }
         }
         .animate-bounce {
@@ -382,7 +351,7 @@ const ChatApp = ({ initialMessage, onBack }) => {
 
         .custom-scrollbar {
           scrollbar-width: thin;
-          scrollbar-color: #6b7280 transparent;
+          scrollbar-color: #93c5fd transparent;
         }
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
@@ -391,15 +360,15 @@ const ChatApp = ({ initialMessage, onBack }) => {
           background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: #6b7280;
+          background-color: #93c5fd;
           border-radius: 9999px;
           transition: background-color 0.2s ease;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background-color: #9ca3af;
+          background-color: #60a5fa;
         }
         .custom-scrollbar::-webkit-scrollbar-button {
-          display: none; 
+          display: none;
         }
 
         * {

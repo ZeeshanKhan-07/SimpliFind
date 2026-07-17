@@ -131,7 +131,7 @@ const HowItWorks = () => {
     const row2 = [...steps.slice(4)].reverse();
 
     return (
-        <section ref={sectionRef} className="w-full bg-white py-16 sm:py-20 lg:py-24 px-4 sm:px-6">
+        <section id="how-it-works" ref={sectionRef} className="w-full bg-white py-16 sm:py-20 lg:py-24 px-4 sm:px-6">
             <div className="max-w-6xl mx-auto">
 
                 {/* Heading */}

@@ -44,7 +44,6 @@ security:
     cookie-same-site: ${JWT_COOKIE_SAME_SITE:lax}
     cookie-domain: ${JWT_COOKIE_DOMAIN:localhost}
 
-
 youtube:
   api:
     key: AIzaSyDjeuYFC_FtXh0csYbX6QlyvGcZWOI3QJ4

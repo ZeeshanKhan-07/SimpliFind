@@ -33,9 +33,11 @@ import com.youtube.SearchSimilarComment.security.JwtAuthenticationFilter;
 public class SecurityConfig {
 
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final ObjectMapper objectMapper;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, ObjectMapper objectMapper) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.objectMapper = objectMapper;
     }
 
     @Bean
@@ -63,8 +65,7 @@ public class SecurityConfig {
                     var apiError = APIError.of(HttpStatus.UNAUTHORIZED.value(), "Unauthorized Access", message,
                             request.getRequestURI());
 
-                    var objectMapper = new ObjectMapper();
-                    response.getWriter().write(objectMapper.writeValueAsString(apiError));
+                    objectMapper.writeValue(response.getWriter(), apiError);
 
                 }))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

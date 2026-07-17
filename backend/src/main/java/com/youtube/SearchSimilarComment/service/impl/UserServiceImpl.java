@@ -1,7 +1,5 @@
 package com.youtube.SearchSimilarComment.service.impl;
 
-import java.util.Set;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -46,4 +44,20 @@ public class UserServiceImpl implements UserService {
         return modelMapper.map(user, UserDTO.class);
     }
 
+    @Override
+    public void updateUserProfile(UserDTO userDTO, String email) {
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
+
+        if (userDTO.getName() != null) {
+            user.setName(userDTO.getName());
+        }
+
+        if (userDTO.getProfile_img() != null) {
+            user.setProfile_img(userDTO.getProfile_img());
+        }
+
+        userRepository.save(user);
+    }
 }
