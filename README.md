@@ -14,9 +14,6 @@ Frontend: https://simplifind.vercel.app
 This project was built to understand real-world full-stack system design, including secure JWT-driven user authentication, asynchronous third-party API integrations, data auditing, and natural language text processing. It features a robust Spring Boot backend integrated with the YouTube Data API to fetch video comments at scale, which are then analyzed using advanced semantic filtering powered by the Gemini API. It showcases high-efficiency data persistence patterns using Spring Data JPA and MySQL, enabling seamless user search history auditing, and features a responsive React frontend designed for interactive, real-time data visualization.
 ---
 
-<<<<<<< HEAD
-<img width="949" height="271" alt="Screenshot 2026-06-24 195958" src="https://github.com/user-attachments/assets/73c1af74-4aad-459c-80e5-099f73ed8c38" />
-=======
 ## 🚀 Features
 
 ### 👤 For Users
