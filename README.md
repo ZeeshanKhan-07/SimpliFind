@@ -4,14 +4,16 @@ SimpliFind is the smart way to save time. Instead of scrolling through thousands
 
 ## Application Preview
 
+Images will be here.
 
-
+---
 
 🌐 **Live Demo**  
 Frontend: https://simplifind.vercel.app
 
 
 This project was built to understand real-world full-stack system design, including secure JWT-driven user authentication, asynchronous third-party API integrations, data auditing, and natural language text processing. It features a robust Spring Boot backend integrated with the YouTube Data API to fetch video comments at scale, which are then analyzed using advanced semantic filtering powered by the Gemini API. It showcases high-efficiency data persistence patterns using Spring Data JPA and MySQL, enabling seamless user search history auditing, and features a responsive React frontend designed for interactive, real-time data visualization.
+
 ---
 
 ## 🚀 Features
@@ -199,4 +201,3 @@ SimpliFind/
 ## 📞 Contact 
 
 - To contact, email **zeeshankhanbca26@gmail.com**.
->>>>>>> 4359dca (Implemented the user dashboard and did some changes in README.md file)
