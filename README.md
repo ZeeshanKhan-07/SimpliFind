@@ -6,9 +6,9 @@ SimpliFind is the smart way to save time. Instead of scrolling through thousands
 
 > **Watch the complete project walkthrough and see the application in action.**
 
-[![Watch Project Demo](https://img.shields.io/badge/▶️%20Watch%20Project%20Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)]([YOUR_VIDEO_LINK_HERE](https://youtu.be/_UuBx-aJHls?si=Gyt0FCcHNl2uUSDs))
+[![Watch Project Demo](https://img.shields.io/badge%20Watch%20Project%20Demo-FF0000?style=for-the-badge&logo=youtube&logoColor=white)]([YOUR_VIDEO_LINK_HERE](https://youtu.be/_UuBx-aJHls?si=Gyt0FCcHNl2uUSDs))
 
-**📹 Video:** [View Full Project Demo →](https://youtu.be/_UuBx-aJHls?si=Gyt0FCcHNl2uUSDs)
+**📹 Video:** [Link](https://youtu.be/_UuBx-aJHls?si=Gyt0FCcHNl2uUSDs)
 
 ## Application Preview
 
