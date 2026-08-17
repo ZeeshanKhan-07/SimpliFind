@@ -2,7 +2,7 @@
 
 SimpliFind is the smart way to save time. Instead of scrolling through thousands of YouTube comments, simply paste the video URL and describe the type of comment you're looking for. SimpliFind will quickly find the most relevant comments that match your needs. If you want to learn more about a specific comment or have any questions regarding it, our AI assistant is always ready to help by providing detailed insights and explanations.
 
-## 🎥 Project Demo
+## 🎥 Live Project Demo
 
 > **Watch the complete project walkthrough and see the application in action.**
 
